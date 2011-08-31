@@ -1,0 +1,3 @@
+Matrix Info File
+Total Words: 14036	Total Contexts: 52728	Total Entries: 270615
+Used Words: 7438	Used Contexts: 23321	Used Entries: 228515

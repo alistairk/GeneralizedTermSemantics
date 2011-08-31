@@ -48,9 +48,39 @@ public class BuildMatrix {
 	
 	
 	/**
+	 * Takes arguments as follows:
+	 * <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
+	 * 
+	 * It is recommended that min term Frequency is 35 for Nouns and Adjectives while 10 for Verbs.
+	 * Min Context Frequency can be anything, but I recommend something low, I used 2.
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		String POS = args[0];//"N";
+		String directory = args[1];//"/Users/akennedy/Research/buildMatrix/";
+		String matrixName = args[2];//"finalMatrix_"+POS.toLowerCase();
+		BuildMatrix bm = new BuildMatrix(matrixName, POS, Integer.parseInt(args[3]), Integer.parseInt(args[4])); //N:35, V:10, A:35
+		boolean dirCreated = bm.createDirectory(directory, matrixName);
+		if(!dirCreated){
+			return;
+		}
+		for(int i = 5; i < args.length; i++){ 
+			String file = args[i];
+			bm.loadFile(file);
+			
+		}
+
+		bm.generateColumnMap();
+		bm.generateRowMap();
+		
+		bm.writeInfo("Matrix Info File");
+		
+		bm.generateCRS();
+		bm.generateCCS();
+		
+	}
+	/*public static void main(String[] args) {
 		String POS = "N";
 		String directory = "/Users/akennedy/Research/buildMatrix/";
 		String matrixName = "finalMatrix_"+POS.toLowerCase();
@@ -80,7 +110,7 @@ public class BuildMatrix {
 		bm.generateCRS();
 		bm.generateCCS();
 		
-	}
+	}*/
 
 
 	/**
