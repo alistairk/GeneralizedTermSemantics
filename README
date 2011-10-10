@@ -1,0 +1,2 @@
+To build a matrix run:
+java BuildMatrixThreaded <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <num Threads> <parsedFile 1> ... <parsedFile n>T
