@@ -61,6 +61,11 @@ public class BuildMatrix {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// TODO: check input length
+		if(args.length < 6){
+			System.out.println("To Run Program: java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>");
+			return;
+		}
 		String POS = args[0];//"N";
 		String directory = args[1];//"/Users/akennedy/Research/buildMatrix/";
 		String matrixName = args[2];//"finalMatrix_"+POS.toLowerCase();
@@ -174,7 +179,7 @@ public class BuildMatrix {
 					ArrayList<Integer> values = getLine(row, bw);
 					writeFeature(index2Word.get(rowID), featureWriter, values);
 				}
-				if((i+1) % 1000 == 0){
+				if((i+1) % 10000 == 0){
 					System.out.println("Processed " + (i+1) + " rows");
 				}
 			}
@@ -301,7 +306,7 @@ public class BuildMatrix {
 						valueArray[Integer.parseInt(parts[i-1])].add(Integer.parseInt(parts[i]));
 					}
 					count++;
-					if(count % 1000 == 0){
+					if(count % 10000 == 0){
 						System.out.println("Loaded " + count + " rows");
 					}
 				}
@@ -328,7 +333,7 @@ public class BuildMatrix {
 				writeFeature(index2Context.get(columnSorted2original[i]), featureWriter, valueArray[i]);
 				printBoundary(boundaryWriter, index2Context.get(columnSorted2original[i]), i);
 		        
-				if((i+1) % 1000 == 0){
+				if((i+1) % 10000 == 0){
 					System.out.println("Written " + (i+1) + " columns");
 				}
 			}
