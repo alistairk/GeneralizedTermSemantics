@@ -51,6 +51,10 @@ public class BuildMatrix {
 	 * Takes arguments as follows:
 	 * <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
 	 * 
+	 * The parsed input files should be as follows:
+	 * be			VBE:pred:N	philosophy
+	 * philosophy	N:subj:N	anarchism
+	 * 
 	 * It is recommended that min term Frequency is 35 for Nouns and Adjectives while 10 for Verbs.
 	 * Min Context Frequency can be anything, but I recommend something low, I used 2.
 	 * 
@@ -80,37 +84,6 @@ public class BuildMatrix {
 		bm.generateCCS();
 		
 	}
-	/*public static void main(String[] args) {
-		String POS = "N";
-		String directory = "/Users/akennedy/Research/buildMatrix/";
-		String matrixName = "finalMatrix_"+POS.toLowerCase();
-		BuildMatrix bm = new BuildMatrix(matrixName, POS, 35, 2); //N:35, V:10, A:35
-		boolean dirCreated = bm.createDirectory(directory, matrixName);
-		if(!dirCreated){
-			return;
-		}
-		for(int i = 1; i <= 145; i++){ //289 //145 half
-			//System.out.print(i + " ");
-			String file = "/Users/akennedy/Research/buildMatrix/wiki_parsed/enwiki_parse-00" + i + ".txt";
-			if(i > 9){
-				file = "/Users/akennedy/Research/buildMatrix/wiki_parsed/enwiki_parse-0" + i + ".txt";
-			}
-			if(i > 99){
-				file = "/Users/akennedy/Research/buildMatrix/wiki_parsed/enwiki_parse-" + i + ".txt";
-			}
-			bm.loadFile(file);
-			
-		}
-
-		bm.generateColumnMap();
-		bm.generateRowMap();
-		
-		bm.writeInfo("Wikipedia: English Edition");
-		
-		bm.generateCRS();
-		bm.generateCCS();
-		
-	}*/
 
 
 	/**
@@ -519,6 +492,9 @@ public class BuildMatrix {
 	 * to is a single word, not a phrase and is made up completely of letters. No
 	 * numbers of punctuation.
 	 * 
+	 * Edit this method if you want to allow for different parts of speech, multi-word 
+	 * expressions or capitals
+	 * 
 	 * @param fname
 	 */
 	public void loadFile(String fname) {
@@ -538,14 +514,16 @@ public class BuildMatrix {
 					if(parts.length == 3){
 						//parts[0] = parts[0].toLowerCase();
 						//parts[2] = parts[2].toLowerCase();
-						if(parts[1].startsWith(POS+":") && parts[0].matches("^[a-z]+$") && parts[2].matches("^[a-zA-Z]+$")){ 
+						//if(parts[1].startsWith(POS+":") && parts[0].matches("^[a-z]+$") && parts[2].matches("^[a-zA-Z]+$")){ 
+						if(parts[1].startsWith(POS+":") && parts[0].matches("^[a-zA-Z _-]+$") && parts[2].matches("^[a-zA-Z _-]+$")){ 
 							String word = parts[0];
 							String context = parts[1] + ":" + parts[2];
 							int wordID = getWord(word);
 							int contextID = getContext(context);
 							countPair(wordID, contextID);
 						}
-						if(parts[1].endsWith(":"+POS) && parts[0].matches("^[a-zA-Z]+$") && parts[2].matches("^[a-z]+$")){
+						//if(parts[1].endsWith(":"+POS) && parts[0].matches("^[a-zA-Z]+$") && parts[2].matches("^[a-z]+$")){
+						if(parts[1].endsWith(":"+POS) && parts[0].matches("^[a-zA-Z _-]+$") && parts[2].matches("^[a-zA-Z _-]+$")){
 							String word = parts[2];
 							String[] bits = parts[1].split(":");
 							String context = bits[0]+":"+bits[1]+"-R:"+ bits[2] + ":" + parts[0];
