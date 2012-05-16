@@ -1,4 +1,4 @@
-package MatrixFormat.WeightMatrix;
+package GenTS.WeightMatrix;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,58 +9,80 @@ import java.util.ArrayList;
 
 
 /**
- * Performs unsupervised feature weighting on an unweighted matrix.
+ * This class re-weights a matrix using one of the measures of association
+ * defined in SemanticMatrix.WeightMatrix.MatrixWeighter. It reads in a matrix
+ * and then re-weights the row matrix file matrix_crs.mat to be re-weighted
+ * with the correct measure of association.
+ * 
+ * This program takes in the part-of-speech (POS), the association measure (TYPE) the directory 
+ * in which the matrix is located (DIRECTORY) and the matrix name (MATRIX_NAME). It then re-weights
+ * the matrix_crs.mat file to be of the matirx_crs.mat.TYPE_POS.
+ * 
+ * Run the program like this:
+ * 
+ * java WeightFeaturesUnsupervised <n|v|a> <PMI|LL|F|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>
  * 
  * @author akennedy
  *
  */
 public class WeightFeaturesUnsupervised {
-	
 	public ArrayList<String> words;
 	public ArrayList<Double> featureWeight;
 	public double totalWeight;
 	public double[] weights;
-	
-	//public static final String POS = "a";
-	//public static  String TYPE = "PMI"; //types are PMI, InfoGain, LL, TTest, Chi2 and F
-	//public static boolean REMOVE_TERMS = true;
-	
-	
 
 	/**
+	 * This program takes in the part-of-speech (POS), the association measure (TYPE) the directory 
+	 * in which the matrix is located (DIRECTORY) and the matrix name (MATRIX_NAME). It then re-weights
+	 * the matrix_crs.mat file to be of the matirx_crs.mat.TYPE_POS.
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String POS = "a";
-		String TYPE = "";
-		String[] types = new String[]{"F", "PMI", "Tscore", "Zscore", "LL", "Chi2"};
-		//String[] types = new String[]{"PMI"};
-		for(String t : types){
-			TYPE = t;
-			System.out.println(TYPE);
-			
-			WeightFeaturesUnsupervised wfu = new WeightFeaturesUnsupervised();
-
-			
-			wfu.loadRows("/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/finalMatrix_"+POS+".rlabel");
-
-			wfu.loadColumnFeatures("/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/matrix_ccs.mat");
-			wfu.weightRowFeatures("/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/matrix_crs.mat",
-					"/Users/akennedy/Research/buildMatrix/final_mod/unsupervised/matrix_crs.mat."+TYPE+"_"+POS, TYPE);
-			
+		if(args.length != 4){
+			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>");
+			return;
 		}
+		
+		String association = args[0]; // PMI
+		String rlabelFile = args[1];// "/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"
+		String rowMatrixFile = args[2]; // finalMatrix_n
+		String columnMatrixFile = args[3];
+		
+		//names of reweighted files
+		String newRowMatrixFile = rowMatrixFile+"."+association;
+		String newColumnMatrixFile = columnMatrixFile+"."+association;
+		
+		System.out.println(association);
+		
+		WeightFeaturesUnsupervised wfu = new WeightFeaturesUnsupervised();
+
+		//loads all the words in the array from the rlabel file
+		wfu.loadRows(rlabelFile);
+
+		//loads the column matrix
+		wfu.loadColumnFeatures(columnMatrixFile);
+		
+		//loads the row matrix and performs all re-weighting.
+		wfu.weightRowFeatures(rowMatrixFile, newRowMatrixFile, association);
+
+		//create new column matrix
+		wfu.rowsToColumns(newRowMatrixFile, newColumnMatrixFile);
 	}
-	
+
 	/**
-	 * Constructor, initializes the words ArrayList
+	 * Constructor initializes a WeightFeaturesUnsupervised object.
 	 */
 	public WeightFeaturesUnsupervised(){
 		words = new ArrayList<String>();
+		featureWeight = new ArrayList<Double>();
+		totalWeight = 0;
 	}
 
-
 	/**
-	 * Reweights the row matrix file using whatever weighting scheme was selected.
+	 * This method performs the actual re-weighting of the matrix. It takes two arguments
+	 * the input file, which is the sparse matrix by row, and the output file which is the
+	 * re-weighted sparse matrix by row.
 	 * 
 	 * @param fname
 	 * @param outName
@@ -73,6 +95,7 @@ public class WeightFeaturesUnsupervised {
 			String first = br.readLine(); // get first line
 			bw.write(first + "\n");
 			
+			//read from the row matrix file
 			for ( ; ; ) {
 				String line = br.readLine();
 	
@@ -91,7 +114,7 @@ public class WeightFeaturesUnsupervised {
 						rowWeight += value;
 					}
 					
-					for(int i = 1; i < parts.length; i+=2){ // calculate the weight
+					for(int i = 1; i < parts.length; i+=2){ // calculate weights for each entry in the row
 						double columnWeight = featureWeight.get(Integer.parseInt(parts[i-1]));
 						
 						double tp = Double.parseDouble(parts[i]);
@@ -99,8 +122,10 @@ public class WeightFeaturesUnsupervised {
 						double fn = columnWeight-tp;
 						double tn = totalWeight-(tp +fp +fn);
 						
-						double value = MatrixWeighter.getTest(tp, fp, fn, tn, type);
+						//create new weight
+						double value = MatrixWeighter.getAssociation(tp, fp, fn, tn, type);
 						
+						//print new value unless it is extremely small 
 						if(value > 0.000000000000000000001){
 							bw.write(parts[i-1] + " " + value + " ");
 						}
@@ -109,8 +134,6 @@ public class WeightFeaturesUnsupervised {
 					bw.write("\n");
 				}
 			}
-			//bw.flush();
-			//bw.close();
 				
 		} catch (Exception e) {
 	    	 e.printStackTrace();
@@ -118,13 +141,14 @@ public class WeightFeaturesUnsupervised {
 	}
 
 	/**
-	 * Loads the column features and calculates the weight of the feature.
+	 * Opens the file passed as an argument and loads the sparse matrix by columns.
+	 * Each column is treated as a feature and loaded into the TreeMap featureWeight.
+	 * This is done to find out how many times a given feature appears across all
+	 * rows in the matrix. The total weight of the matrix is also recorded.
 	 * 
 	 * @param fname
 	 */
 	public void loadColumnFeatures(String fname) {
-		featureWeight = new ArrayList<Double>();
-		totalWeight = 0;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(fname));
 			br.readLine(); // get first line
@@ -165,8 +189,8 @@ public class WeightFeaturesUnsupervised {
 
 
 	/**
-	 * Loads the words and stores them in an arrayList. It also keeps track of which words can be used
-	 * and which are not useful (i.e. do not appear in Roget's)
+	 * Opens the file passed as the argument and reads all its lines into the words
+	 * ArrayList. The file passed to it should be a list of all the words in the array.
 	 * 
 	 * @param fname
 	 */
@@ -194,7 +218,10 @@ public class WeightFeaturesUnsupervised {
 	}
 	
 	/**
-	 * Translates a matrix
+	 * This method takes the row matrix and translates it into a new column matrix.
+	 * This method can be called after the row matrix has been re-weighted. It takes
+	 * two arguments the row matrix and the column matrix that is to be created.
+	 * 
 	 * @param fname
 	 * @param outFile
 	 */
@@ -206,9 +233,11 @@ public class WeightFeaturesUnsupervised {
 			
 			bw.write(line + "\n");
 
+			//initialize arrays for IDs of contexts and their values.
 			String[] firstBreak = line.split(" ");
-			//String[] valueArray = new String[Integer.parseInt(firstBreak[1])];
+			@SuppressWarnings("unchecked")
 			ArrayList<Integer>[] idArray = new ArrayList[Integer.parseInt(firstBreak[1])];
+			@SuppressWarnings("unchecked")
 			ArrayList<Double>[] valueArray = new ArrayList[Integer.parseInt(firstBreak[1])];
 			for(int i = 0; i < idArray.length; i++){
 				idArray[i] = new ArrayList<Integer>();
@@ -216,6 +245,7 @@ public class WeightFeaturesUnsupervised {
 			}
 			int count = 0;
 			
+			//read matrix and load it into the id and values arrays
 			for ( ; ; ) {
 				line = br.readLine();
 	
@@ -236,6 +266,9 @@ public class WeightFeaturesUnsupervised {
 					}
 				}
 			}
+			
+			//iterate through the value array and 
+			
 			for(int i = 0; i < valueArray.length; i++){
 		        if(valueArray[i].size() > 0){
 	        		ArrayList<Integer> ids = idArray[i];
@@ -254,8 +287,6 @@ public class WeightFeaturesUnsupervised {
 		catch (Exception e) {
 	    	 e.printStackTrace();
 		}
-		
-		
 
 	}
 	

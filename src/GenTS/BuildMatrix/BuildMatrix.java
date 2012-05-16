@@ -1,4 +1,5 @@
-package MatrixFormat.BuildMatrix;
+package GenTS.BuildMatrix;
+
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,40 +11,77 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeMap;
 
+/**
+ * This program creates a matrix in the style of SuperMatrix. See:
+ * Bartosz Broda, Maciej Piasecki. SuperMatrix: a General tool for lexical semantic knowledge acquisition. In Proceedings of IMCSIT'2008. pp.345~352   
+ * 
+ * This program reads in files of dependency triples generated using Minipar and produces a matrix.
+ * The parsed input files should be as follows:
+ * be			VBE:pred:N	philosophy
+ * philosophy	N:subj:N	anarchism
+ * 
+ * Words and contexts are extracted, such as "philosophy" appears in the context <N:subj:N, anarchism> and
+ * "anarchism" appears in the context <philosophy, N:subj:N>
+ * 
+ * See:
+ * Lin, Dekang: Dependency-based Evaluation of MINIPAR. In: Proc. Workshop on the Evaluation of Parsing Systems, 1998 (Granada)
+ * 
+ * Matrices can be produces for nouns, verbs or adjectives/adverbs. The name of the location of a directory 
+ * in which to place the matrix files and the name of the matrix are given as the second and third argument
+ * while the nimum term frequency and minimum context frequency are the fourth and fifth arguments. After
+ * this enter a list of parsed files. Execute the program as follows:
+ * 
+ * java BuildMatrix <N|V|A> <output Directory> <output Matrix Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
+ * 
+ * TODO:
+ * The matrix only accepts words in lower case with no spaces. This is done in the function "loadFile".
+ * Perhaps  a regular expression could be made a parameter of this function.
+ * 
+ * @author akennedy
+ *
+ */
 public class BuildMatrix {
-	
+	//the POS, directory and name of matrix
 	private String POS;
 	private String fullDirectory;
 	private String matrixName;
 	
+	//minimum column and row counts
 	private int min_columns;
 	private int min_rows;
 	
+	//counts of words, contexts and non zero entries in the matrix
 	private int wordCounter;
 	private int contextCounter;
 	private int nonZeroEnties;
 	
+	// maps words and columns to their index values
 	private TreeMap<String, Integer> word2Index;
 	private TreeMap<String, Integer> context2Index;
 	
+	//maps an index value to the word or context
 	private ArrayList<String> index2Word;
 	private ArrayList<String> index2Context;
 	
+	// count of each specific word or context and count of each pair
 	private ArrayList<Integer> wordCount; //index is word ID
 	private ArrayList<Integer> contextCount; //index is context ID
 	private ArrayList<TreeMap<Integer, Integer>> pairCounter; // ArrayList index is Word ID, TreeMap index is context ID
 	
+	//maps the sorted row/column number to the original
 	private int[] rowSorted2original;
 	private int[] columnSorted2original;
 	
-
+	//maps the original row/column number to sorted
 	private int[] rowOriginal2sorted;
 	private int[] columnOriginal2sorted;
 	
+	//counts the number of rows, columns and entries
 	private int rowCount;
 	private int columnCount;
 	private int entryCount;
 	
+	//keeps track of the previous context's relation type
 	private String previousFeatureType;
 	
 	
@@ -65,9 +103,9 @@ public class BuildMatrix {
 			System.out.println("To Run Program: java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>");
 			return;
 		}
-		String POS = args[0];//"N";
-		String directory = args[1];//"/Users/akennedy/Research/buildMatrix/";
-		String matrixName = args[2];//"finalMatrix_"+POS.toLowerCase();
+		String POS = args[0];
+		String directory = args[1];
+		String matrixName = args[2];
 		BuildMatrix bm = new BuildMatrix(matrixName, POS, Integer.parseInt(args[3]), Integer.parseInt(args[4])); //N:35, V:10, A:35
 		boolean dirCreated = bm.createDirectory(directory, matrixName);
 		if(!dirCreated){
@@ -78,11 +116,14 @@ public class BuildMatrix {
 			bm.loadFile(file);
 		}
 
+		//Generates lists of columns and lists of rows
 		bm.generateColumnMap();
 		bm.generateRowMap();
 		
+		//records matrix size information
 		bm.writeInfo("Matrix Info File");
 		
+		//generates two sparse matrix files, one by row, one by column
 		bm.generateCRS();
 		bm.generateCCS();
 		
@@ -106,7 +147,6 @@ public class BuildMatrix {
 			bw.write("Used Words: "+rowCount+"\tUsed Contexts: "+columnCount+"\tUsed Entries: "+entryCount + "\n");
 			bw.flush();
 			bw.close();
-			//System.out.println(rowCount + " : " + columnCount + " : " + entryCount);
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -351,6 +391,7 @@ public class BuildMatrix {
 	/**
 	 * This prints out the boundary file. This file gives a line number where the
 	 * last instance of a context with a given relationship is found.
+	 * 
 	 * @param boundaryWriter
 	 * @param feature
 	 * @param line
@@ -517,16 +558,16 @@ public class BuildMatrix {
 					if(parts.length == 3){
 						//parts[0] = parts[0].toLowerCase();
 						//parts[2] = parts[2].toLowerCase();
-						//if(parts[1].startsWith(POS+":") && parts[0].matches("^[a-z]+$") && parts[2].matches("^[a-zA-Z]+$")){ 
-						if(parts[1].startsWith(POS+":") && parts[0].matches("^[a-zA-Z _-]+$") && parts[2].matches("^[a-zA-Z _-]+$")){ 
+						if(parts[1].startsWith(POS+":") && parts[0].matches("^[a-z]+$") && parts[2].matches("^[a-zA-Z]+$")){
+						//if(parts[1].startsWith(POS+":") && parts[0].matches("^[a-zA-Z _-]+$") && parts[2].matches("^[a-zA-Z _-]+$")){ 
 							String word = parts[0];
 							String context = parts[1] + ":" + parts[2];
 							int wordID = getWord(word);
 							int contextID = getContext(context);
 							countPair(wordID, contextID);
 						}
-						//if(parts[1].endsWith(":"+POS) && parts[0].matches("^[a-zA-Z]+$") && parts[2].matches("^[a-z]+$")){
-						if(parts[1].endsWith(":"+POS) && parts[0].matches("^[a-zA-Z _-]+$") && parts[2].matches("^[a-zA-Z _-]+$")){
+						if(parts[1].endsWith(":"+POS) && parts[0].matches("^[a-zA-Z]+$") && parts[2].matches("^[a-z]+$")){
+						//if(parts[1].endsWith(":"+POS) && parts[0].matches("^[a-zA-Z _-]+$") && parts[2].matches("^[a-zA-Z _-]+$")){
 							String word = parts[2];
 							String[] bits = parts[1].split(":");
 							String context = bits[0]+":"+bits[1]+"-R:"+ bits[2] + ":" + parts[0];

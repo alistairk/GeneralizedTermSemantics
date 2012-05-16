@@ -1,113 +1,57 @@
-package MatrixFormat.WeightMatrix;
+package GenTS.WeightMatrix;
 
 /**
  * This class is made up of static methods for calculating a variety of measures of association.
+ * Each method is called statically. matrices of observed and expected values are calculated and
+ * then used in the measure of association.
+ * 
+ * New measures of association can easily be written and added and called from the getAssociation method.
  *
  * @author akennedy
  *
  */
 public class MatrixWeighter {
 	
-	/**
-	 * Contains some test cases for this class.
-	 * @param args
-	 */
-	public static void main(String[] args){
-		double[][] observed = formatInputs(8, 4667, 15820,14287173);
-		double[][] expected = generateExpectedFromObserved(observed);
-		for(int i = 0; i < observed.length; i++){ //row
-			for(int j= 0; j < observed[0].length; j++){ //column
-				System.out.print(observed[i][j] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println();
-		for(int i = 0; i < expected.length; i++){ //row
-			for(int j= 0; j < expected[0].length; j++){ //column
-				System.out.print(expected[i][j] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println();
-		int a = 10, b = 23, c = 880,d = 33233;
-		System.out.println(getTest(a,b,c,d, "F"));
-		System.out.println(getTest(a,c,b,d, "F"));
-		System.out.println();
-		System.out.println(getTest(a,b,c,d, "Tscore"));
-		System.out.println(getTest(a,c,b,d, "Tscore"));
-		System.out.println();
-		System.out.println(getTest(a,b,c,d, "Zscore"));
-		System.out.println(getTest(a,c,b,d, "Zscore"));
-		System.out.println();
-		System.out.println(getTest(a,b,c,d, "PMI"));
-		System.out.println(getTest(a,c,b,d, "PMI"));
-		System.out.println("LL");
-		System.out.println(getTest(a,b,c,d, "LL"));
-		System.out.println(getTest(a,c,b,d, "LL"));
-		System.out.println("chi2");
-		System.out.println(getTest(a,b,c,d, "Chi2"));
-		System.out.println(getTest(a,c,b,d, "Chi2"));
-		System.out.println();
-		System.out.println(getTest(a,b,c,d, "InfoGain"));
-		System.out.println(getTest(a,c,b,d, "InfoGain"));
-		System.out.println();
-		System.out.println();
-		
-		System.out.println("a");
-		System.out.println(getTest(4,20,20,50000, "PMI"));
-		System.out.println("b");
-		System.out.println(getTest(400,2000,2000,5000000, "PMI"));
-	}
 	
 	/**
-	 * This static method can be called with the input for a 2x2 confusion matrix and the name of a test.
-	 * If the resulting similarity is less than zero then it is set to zero and returned.
+	 * This static method can be called with the input for a 2x2 confusion matrix and the name of an 
+	 * association measure. The matrix is represented by the arguments true-positive, false-negative
+	 * false-positive and true-positive. If the resulting similarity is less than zero then it is set 
+	 * to zero and returned.
 	 * 
-	 * @param SG2F
-	 * @param SG1F
-	 * @param nSG2F
-	 * @param nSG1F
-	 * @param test
+	 * @param tp
+	 * @param fn
+	 * @param fp
+	 * @param tn
+	 * @param measureType
 	 * @return
 	 */
-	public static double getTest(double SG2F, double SG1F, double nSG2F, double nSG1F, String test){
-		double[][] observed = formatInputs(SG2F, SG1F, nSG2F, nSG1F);
+	public static double getAssociation(double tp, double fn, double fp, double tn, String measureType){
+		double[][] observed = formatInputs(tp, fn, fp, tn);
 		double[][] expected = generateExpectedFromObserved(observed);
 		double toReturn = 0;
-		if(test.equals("Tscore")){
+		if(measureType.equals("Tscore")){
 			toReturn = ttest(observed, expected);
 		}
-		else if(test.equals("Zscore")){
+		else if(measureType.equals("Zscore")){
 			toReturn = zscore(observed, expected);
 		}
-		else if(test.equals("InfoGain")){
-			toReturn = infoGain(observed);
-		}
-		else if(test.equals("F")){
+		else if(measureType.equals("F")){
 			toReturn = F(observed);
 		}
-		else if(test.equals("PMI")){
+		else if(measureType.equals("PMI")){
 			toReturn = pmi(observed, expected);
 		}
-		else if(test.equals("LL")){
+		else if(measureType.equals("LL")){
 			toReturn = LL(observed, expected);
 		}
-		else if(test.equals("Chi2")){
+		else if(measureType.equals("Chi2")){
 			toReturn = chi2(observed, expected);
 		}
 		
-		/*if(SG2F < 0  || SG1F < 0 || nSG2F < 0 || nSG1F < 0){
-			System.out.println(SG2F + "  " + SG1F);
-			System.out.println(nSG2F + "  " + nSG1F);
-			System.out.println(toReturn);
-			System.out.println();
-		}*/
 		if(toReturn < 0){
 			toReturn = 0;
 		}
-		//if(Double.isNaN(toReturn)){
-		//	return 0;
-		//}
 		
 		return toReturn;
 	}
@@ -115,8 +59,9 @@ public class MatrixWeighter {
 
 	
 	/**
-	 * Takes as input a matrix of observed cooccurrences and produces a matrix
-	 * of the expected co-occurrences.
+	 * Takes as input a matrix of observed co-occurrences and produces a matrix
+	 * of the expected co-occurrences. Sums of the rows and columns are used
+	 * to generate the expected values.
 	 * 
 	 * @param observed
 	 * @return
@@ -149,6 +94,7 @@ public class MatrixWeighter {
 	
 	/**
 	 * Takes a set of true positives, false negatives, etc. and builds a 2x2 matrix.
+	 * 
 	 * @param SG2F
 	 * @param SG1F
 	 * @param nSG2F
@@ -302,58 +248,6 @@ public class MatrixWeighter {
 			}
 		}
 		return 2*LL;
-	}
-	
-	
-	/**
-	 * Calculates information gain, this one only works on a 2x2 matrix.
-	 * Takes only the observed matrix.
-	 * 
-	 * @param O
-	 * @return
-	 */
-	public static double infoGain(double[][] O) {
-		//if(SG2F == 0 || nSG2F == 0 || SG1F == 0){
-		//	return 0;
-		//}
-		double positives = O[0][0] + O[0][1]; //SG2F + SG1F
-		double negatives = O[1][0] + O[1][1]; //nSG2F + nSG1F
-		double total = positives + negatives;
-		
-		double initInfoA = positives/total * log2(positives/total);
-		if(positives == 0){
-			initInfoA = 0;
-		}
-		double initInfoB = negatives/total * log2(negatives/total);
-		if(negatives == 0){
-			initInfoB = 0;
-		}
-		double initInfo = -(initInfoA + initInfoB);
-
-		double info2A = O[0][0]/(O[0][0]+O[1][0]) * log2(O[0][0]/(O[0][0]+O[1][0]));
-		if(O[0][0] == 0){
-			info2A = 0;
-		}
-		double info2B = O[1][0]/(O[0][0]+O[1][0]) * log2(O[1][0]/(O[0][0]+O[1][0]));
-		if(O[1][0] == 0){
-			info2B = 0;
-		}
-		double info2 = -(info2A + info2B);
-		
-		double info1A = O[0][1]/(O[0][1]+O[1][1]) * log2(O[0][1]/(O[0][1]+O[1][1]));
-		if(O[0][1] == 0){
-			info1A = 0;
-		}
-		double info1B = O[1][1]/(O[0][1]+O[1][1]) * log2(O[1][1]/(O[0][1]+O[1][1]));
-		if(O[1][1] == 0){
-			info1B = 0;
-		}
-		double info1 = -(info1A + info1B);
-		
-		//System.out.println("info1A: " + info1A);
-		//System.out.println("info1B: " + info1B);
-		
-		return initInfo - ((O[0][0]+O[1][0])/total * info2 + (O[0][1]+O[1][1])/total * info1);
 	}
 
 }

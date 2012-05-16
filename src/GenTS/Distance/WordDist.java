@@ -1,4 +1,4 @@
-package MatrixFormat.Distance;
+package GenTS.Distance;
 
 /**
  * this is a class used to keep track of a word, similarity pair, it is used
@@ -14,7 +14,7 @@ public class WordDist {
 	private float tf;
 	
 	/**
-	 * Constructor
+	 * Constructor sets the word and its distance.
 	 * 
 	 * @param w
 	 * @param s
@@ -24,6 +24,11 @@ public class WordDist {
 		similarity = s;
 	}
 	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param wd
+	 */
 	public WordDist(WordDist wd){
 		word = wd.getWord();
 		similarity = wd.getSimilarity();
@@ -31,7 +36,9 @@ public class WordDist {
 	}
 	
 	/**
-	 * Second Constructor 
+	 * Constructor sets the word, its distance from the target
+	 * and also records the term frequency of the word.
+	 *  
 	 * @param w
 	 * @param s
 	 * @param t
@@ -43,7 +50,7 @@ public class WordDist {
 	}
 	
 	/**
-	 * Get word.
+	 * Gets the word.
 	 * 
 	 * @return
 	 */
@@ -70,7 +77,7 @@ public class WordDist {
 	}
 	
 	/**
-	 * Returns string "word (similarity)".
+	 * Returns string "word (similarity)
 	 */
 	public String toString(){
 		//return word + " (" + similarity + ", " + tf + ")";

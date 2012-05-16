@@ -1,4 +1,4 @@
-package MatrixFormat.WeightMatrix;
+package GenTS.WeightMatrix;
 
 
 /**
@@ -16,7 +16,7 @@ public class WeightFeaturesUnsupervisedOverSupervised {
 	 * @param args
 	 */
 	public static void main(String args[]){
-		for(int num = 2; num <= 2; num++){
+		for(int num = 1; num <= 1; num++){
 			String POS = "a";
 			
 			//String[] types = new String[]{"F", "PMI", "Tscore", "Zscore", "LL", "Chi2"};
