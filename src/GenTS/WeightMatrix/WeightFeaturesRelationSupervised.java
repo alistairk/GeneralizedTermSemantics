@@ -1,4 +1,4 @@
-package MatrixFormat.WeightMatrix;
+package GenTS.WeightMatrix;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 
-import semDist.BinaryDist;
 
 /**
  * This class performs supervised Matrix weighting.
@@ -16,7 +15,7 @@ import semDist.BinaryDist;
  * @author akennedy
  *
  */
-public class WeightFeaturesSupervised {
+public class WeightFeaturesRelationSupervised {
 	private HashSet<String> stopWords;
 	private ArrayList<String> words;
 	private ArrayList<Double> wordsCount;
@@ -35,14 +34,14 @@ public class WeightFeaturesSupervised {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//for(int num = 3; num <= 3; num++){
-			int num = 2;
+		//for(int num = 1; num <= 3; num++){
+			int num = 3;
 			//int YEAR = 1911;
 			String POS = "a";
 			//String STOPWORDS = "./stops.txt";
 			boolean REMOVE_TERMS = true;
 	
-			WeightFeaturesSupervised wfrs = new WeightFeaturesSupervised("/Users/akennedy/Research/buildMatrix/synonymSets/wordnet/adjs.txt");
+			WeightFeaturesRelationSupervised wfrs = new WeightFeaturesRelationSupervised("/Users/akennedy/Research/buildMatrix/synonymSets/rogets/adjs_1987.txt");
 			
 			//wfrs.setRogetPOS("N.");
 			String testsFile = "nounList"+num+".txt";
@@ -80,15 +79,15 @@ public class WeightFeaturesSupervised {
 				wfrs.initializeWeights(POS);
 				
 				wfrs.loadColumnFeatures("/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/matrix_ccs.mat",
-						"/Users/akennedy/Research/buildMatrix/final_mod/supervised"+num+"/column.t"+t+"_"+POS);
+						"/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/boundary.txt",
+						"/Users/akennedy/Research/buildMatrix/final_mod/supervised"+num+"/column.r"+t+"_"+POS);
 				wfrs.weightRowFeatures("/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/matrix_crs.mat",
-						"/Users/akennedy/Research/buildMatrix/final_mod/supervised"+num+"/matrix_crs.mat.t"+t+"_"+POS);
+						"/Users/akennedy/Research/buildMatrix/final_mod/supervised"+num+"/matrix_crs.mat.r"+t+"_"+POS);
 			}
 		//}
-		
 	}
 	
-	public WeightFeaturesSupervised(String groupingsFile){
+	public WeightFeaturesRelationSupervised(String groupingsFile){
 		legitWords = 0;
 		stopWords = new HashSet<String>();
 		words = new ArrayList<String>();
@@ -170,16 +169,66 @@ public class WeightFeaturesSupervised {
 	 * 
 	 * @param fname
 	 */
-	public void loadColumnFeatures(String fname, String outputFile) {
+	public void loadColumnFeatures(String fname, String boundaryFname, String outputFile) {
 		int totalFeaturesCount = 0;
+		int startValue = 0;
+		String relation = "";
 		int featureNumber = 0;
-		int linesCount = 0;
+		int boundaryValue = 0;
 		boolean[] goodWeights = new boolean[weights.length];
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(fname));
+			BufferedReader boundaryReader = new BufferedReader(new FileReader(boundaryFname));
 			br.readLine(); // get first line
 			
+			double SG2F = 0;
+			double nSG2F = 0;
+			double SG1F = 0;
+			double nSG1F = 0;
+			
 			for ( ; ; ) {
+				
+				if(featureNumber == boundaryValue){
+					String boundaryLine = boundaryReader.readLine();
+					if(boundaryLine != null){
+						String[] bParts = boundaryLine.split(" := ");
+						boundaryValue = Integer.parseInt(bParts[1]);
+						System.out.println(relation + " : " + startValue + " " + featureNumber);
+						
+						//System.out.println(SG2F + " " + nSG2F + " " + SG1F + " " + nSG1F);
+						
+						double value = 1;
+						boolean isGood = true;
+						value = MatrixWeighter.getAssociation(SG2F, nSG2F, SG1F, nSG1F, TYPE);
+						if(nSG1F > 0 && (Double.isNaN(value) || Double.isInfinite(value))){
+							System.out.println(featureNumber);
+							System.out.println((int)SG2F + " " + (int)nSG2F);
+							System.out.println((int)SG1F + " " + (int)nSG1F);
+							System.out.println(value);
+							System.out.println();
+						}
+						if(SG2F + nSG2F + SG1F + nSG1F == 0){
+							System.out.println("zero");
+							isGood = false;
+							value = 1;
+						}
+						for(int i = startValue; i < featureNumber; i++){
+							weights[i] = value;
+							goodWeights[i] = isGood;
+						}
+						relation = bParts[0];
+						
+						SG2F = 0;
+						nSG2F = 0;
+						SG1F = 0;
+						nSG1F = 0;
+	
+						startValue = featureNumber;
+					}
+					else{
+						boundaryReader.close();
+					}
+				}
 				String line = br.readLine();
 	
 				if (line == null) {
@@ -217,34 +266,23 @@ public class WeightFeaturesSupervised {
 						//double PairCountSharingFeaturesNotNecessariallySG = goodCount * (goodCount-1); // counts every pair twice, so divide by 2
 						double PairsNotSharingFeature = instancesOfWordsInContext * (legitWords-TFofWordsInContext); 
 						
-						double SG2F = PairsRelatedSharingFeature;
-						double nSG2F = PairsUnrelatedSharingFeautre;
-						double SG1F = PairRelatedNotSharingFeature;// - SG2F;
-						double nSG1F = PairsNotSharingFeature - (SG1F); // pairs unrelated & not sharing feature
+						SG2F += PairsRelatedSharingFeature/10000.0;
+						nSG2F += PairsUnrelatedSharingFeautre/10000.0;
+						SG1F += PairRelatedNotSharingFeature/10000.0;// - SG2F;
+						nSG1F += (PairsNotSharingFeature - SG1F)/10000.0; // pairs unrelated & not sharing feature
 						
-						double value = MatrixWeighter.getTest(SG2F, nSG2F, SG1F, nSG1F, TYPE);
+						/*double value = MatrixWeighter.getTest(SG2F, nSG2F, SG1F, nSG1F, TYPE);
 						
-						if(Double.isNaN(value) || Double.isInfinite(value) || nSG1F < 0){
-							System.out.println(featureNumber);
-							System.out.println((int)SG2F + " " + (int)nSG2F);
-							System.out.println((int)SG1F + " " + (int)nSG1F);
-							System.out.println(value);
-							System.out.println();
-						}
 						
 						weights[featureNumber] = value;
 						goodWeights[featureNumber] = true;
+						*/
 					}
-					else{
+					//else{
 						//weights[featureNumber] = 0;
-						goodWeights[featureNumber] = false;
-					}
+					//	goodWeights[featureNumber] = false;
+					//}
 					featureNumber++;
-				}
-
-				linesCount++;
-				if(linesCount % 1000 == 0){
-					System.out.println("Features processed: " + linesCount);
 				}
 			}
 	
@@ -358,6 +396,7 @@ public class WeightFeaturesSupervised {
 	/**
 	 * Identifies pairs of words that appear in the same Roget's Grouping and records them in a hashtable.
 	 */
+	@SuppressWarnings("unchecked")
 	public void colleceRelatedPairs() {
 		relatedPairs = new HashSet[words.size()];
 		for(int i = 0; i < relatedPairs.length; i++){
@@ -539,6 +578,8 @@ public class WeightFeaturesSupervised {
 				else {
 					String[] parts = line.split(" ");
 					stopWords.add(parts[0]);
+					//stopWords.add(parts[1]);
+					//stopWords.add(parts[2]);
 				}
 			}
 	
