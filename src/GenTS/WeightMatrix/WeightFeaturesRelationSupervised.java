@@ -23,7 +23,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 	 */
 	public static void main(String[] args) {
 		if(args.length != 6){
-			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file> <output column file>");
+			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>");
 			return;
 		}
 		String association = args[0]; 
@@ -32,7 +32,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 		String rowMatrixFile = args[3]; 
 		String columnMatrixFile = args[4];
 		String columnBoundaryFile = args[5];
-		String outputColumnWeights = args[5];
+		String outputColumnWeights = args[4].substring(0, args[4].lastIndexOf("/"))+"/columns_relation_"+association+".txt";
 		
 		//names of re-weighted files
 		String newRowMatrixFile = rowMatrixFile+".r-"+association;

@@ -48,8 +48,8 @@ public class WeightFeaturesContextSupervised {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if(args.length != 6){
-			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <output column file>");
+		if(args.length != 5){
+			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>");
 			return;
 		}
 		String association = args[0]; 
@@ -57,7 +57,7 @@ public class WeightFeaturesContextSupervised {
 		String rowFeaturesFile = args[2]; 
 		String rowMatrixFile = args[3]; 
 		String columnMatrixFile = args[4];
-		String outputColumnWeights = args[5];
+		String outputColumnWeights = args[4].substring(0, args[4].lastIndexOf("/"))+"/columns_context_"+association+".txt";
 		
 		//names of re-weighted files
 		String newRowMatrixFile = rowMatrixFile+".c-"+association;
