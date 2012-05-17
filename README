@@ -1,2 +1,24 @@
+Step 1
+
 To build a matrix run:
-java BuildMatrixThreaded <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <num Threads> <parsedFile 1> ... <parsedFile n>T
+java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
+
+Step2
+
+Reweight the matrix with either the unsupervised, context-supervised or relation-supervised system. Choose one of these three:
+
+unsupervised:
+To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>
+
+context-supervised:
+To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <output column file>
+
+relation-supervised:
+needs fixing
+
+Step 2a
+
+If you used supervised Matrix reweighting then you can run the unsupervised re-weighting on top of it.
+This was found to create the best results.
+
+

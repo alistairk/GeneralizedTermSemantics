@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Hashtable;
 
 
@@ -15,159 +13,82 @@ import java.util.Hashtable;
  * @author akennedy
  *
  */
-public class WeightFeaturesRelationSupervised {
-	private HashSet<String> stopWords;
-	private ArrayList<String> words;
-	private ArrayList<Double> wordsCount;
-	private ArrayList<Boolean> goodWords;
-	private HashSet<Integer>[] relatedPairs;
-	//private RogetELKB elkb;
-	private BinaryDist bd;
-	private double[] weights;
-	private long legitWords;
-	//private int positivePairs;
-	
-	private String TYPE;
-	//private String POS;
+public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSupervised{
 	
 	/**
+	 * The main function reads in the arguments and then creates a new WeightFeaturesSuprvised
+	 * class.
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//for(int num = 1; num <= 3; num++){
-			int num = 3;
-			//int YEAR = 1911;
-			String POS = "a";
-			//String STOPWORDS = "./stops.txt";
-			boolean REMOVE_TERMS = true;
-	
-			WeightFeaturesRelationSupervised wfrs = new WeightFeaturesRelationSupervised("/Users/akennedy/Research/buildMatrix/synonymSets/rogets/adjs_1987.txt");
-			
-			//wfrs.setRogetPOS("N.");
-			String testsFile = "nounList"+num+".txt";
-			//String testsFile = "nounEmoList2.txt";
-			//String testsFile = "nounSentiList.txt";
-			if(POS.equals("v")){
-				//wfrs.setRogetPOS("VB.");
-				testsFile  = "verbList"+num+".txt";
-				//testsFile  = "verbEmoList2.txt";
-				//testsFile  = "verbSentiList.txt";
-			}
-			else if (POS.equals("a")){
-				//wfrs.setRogetPOS("ADJ.");
-				testsFile = "adjList"+num+".txt";
-				//testsFile = "adjEmoList2.txt";
-				//testsFile = "adjSentiList.txt";
-			}
-			
-			//wfrs.loadStopWordList(STOPWORDS);
-			if(REMOVE_TERMS){
-				wfrs.loadExemptWords("/Users/akennedy/workspace/Roget2/selectBest/finalLists/" + testsFile);
-				//wfrs.loadStopWordList("/Users/akennedy/workspace/Roget2/selectBest/" + testsFile);
-			}
-	
-			wfrs.loadRows("/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/row_features.csv");
-			
-			wfrs.colleceRelatedPairs();
-	
-			//String[] types = new String[]{"F", "PMI", "Tscore", "Zscore", "LL", "Chi2"};
-			String[] types = new String[]{"PMI"};
-			for(String t : types){
-				System.out.println(t);
-				wfrs.setType(t);
-	
-				wfrs.initializeWeights(POS);
+		if(args.length != 6){
+			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file> <output column file>");
+			return;
+		}
+		String association = args[0]; 
+		String trainingData = args[1]; 
+		String rowFeaturesFile = args[2]; 
+		String rowMatrixFile = args[3]; 
+		String columnMatrixFile = args[4];
+		String columnBoundaryFile = args[5];
+		String outputColumnWeights = args[5];
+		
+		//names of re-weighted files
+		String newRowMatrixFile = rowMatrixFile+".r-"+association;
+		String newColumnMatrixFile = columnMatrixFile+".r-"+association;
 				
-				wfrs.loadColumnFeatures("/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/matrix_ccs.mat",
-						"/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/boundary.txt",
-						"/Users/akennedy/Research/buildMatrix/final_mod/supervised"+num+"/column.r"+t+"_"+POS);
-				wfrs.weightRowFeatures("/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"/matrix_crs.mat",
-						"/Users/akennedy/Research/buildMatrix/final_mod/supervised"+num+"/matrix_crs.mat.r"+t+"_"+POS);
-			}
-		//}
+		WeightFeaturesRelationSupervised wfrs = new WeightFeaturesRelationSupervised(trainingData, rowMatrixFile, association);
+		
+		//load row file
+		wfrs.loadRows(rowFeaturesFile);
+		
+		//assembles training data into a hashtable, only words found in the matrix are used.
+		wfrs.colleceRelatedPairs();
+
+		//loads columns and calculates the weights for each feature
+		wfrs.loadColumnFeatures(columnMatrixFile, columnBoundaryFile, outputColumnWeights);
+		
+		//creates new row matrix using these features
+		wfrs.weightRowFeatures(rowMatrixFile, newRowMatrixFile);
+		
+		//translates the row matrix into a column matrix using the function in WeightFeaturesUnsupervised
+		WeightFeaturesUnsupervised wfu = new WeightFeaturesUnsupervised();
+		wfu.rowsToColumns(newRowMatrixFile, newColumnMatrixFile);
 	}
 	
-	public WeightFeaturesRelationSupervised(String groupingsFile){
-		legitWords = 0;
-		stopWords = new HashSet<String>();
-		words = new ArrayList<String>();
-		wordsCount = new ArrayList<Double>();
-		goodWords = new ArrayList<Boolean>();
-		
-		bd = new BinaryDist(groupingsFile);
-		
-	}
-	
-	public void setType(String t) {
-		TYPE = t;
-	}
-
-	/*public void setRogetPOS(String pos) {
-		POS = pos;
-	}*/
-
-	public void initializeWeights(String POS){
-		int columnCount = 1050178; //321152; // noun columns
-		if(POS.equals("v")){
-			columnCount = 1423665; //407421;
-		}
-		else if(POS.equals("a")){
-			columnCount = 360436; //25890;
-		}
-		
-		weights = new double[columnCount]; // hard coded value, number of columns
-		for(int i = 0; i < weights.length; i++){
-			weights[i] = 1;
-		}
-	}
-
-
-
 	/**
-	 * Reweights the row matrix file using whatever weighting scheme was selected.
+	 * The constructor takes in the training data, the rows file
+	 * from the matrix and the measure of association. Using this
+	 * it loads all the training data, sets the measure of association
+	 * and uses the matrix file in order to determine how many columns
+	 * there are. The row matrix is also loaded
 	 * 
-	 * @param fname
-	 * @param outName
+	 * @param trainingData
+	 * @param rowFile
+	 * @param association
 	 */
-	public void weightRowFeatures(String fname, String outName) {
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(outName));
-			
-			BufferedReader br = new BufferedReader(new FileReader(fname));
-			String first = br.readLine(); // get first line
-			bw.write(first + "\n");
-			
-			for ( ; ; ) {
-				String line = br.readLine();
-	
-				if (line == null) {
-					br.close();
-					bw.close();
-					break;
-				}
-	
-				else {
-					String[] parts = line.split(" ");
-					for(int i = 0; i < parts.length; i+=2){
-						double value = Double.parseDouble(parts[i+1]) * weights[Integer.parseInt(parts[i])];
-						if(value > 0.000000000000000000001){
-							bw.write(parts[i] + " " + value + " ");
-						}
-					}
-					bw.write("\n");
-				}
-			}
-			//bw.close();
-				
-		} catch (Exception e) {
-	    	 e.printStackTrace();
-		}
+	public WeightFeaturesRelationSupervised(String trainingData, String rowFile, String association){
+		super(trainingData, rowFile, association);
 	}
+	
 
 	/**
-	 * Loads the column features and calculates the weight of the feature.
+	 * This function does most of the work. It reads in the column matrix and then
+	 * finds weights for each entry in the column. The column matrix is the first
+	 * argument and the second argument is the file that we will be column values
+	 * to. 
+	 * 
+	 * This function will iterate through each column in the matrix counting the 
+	 * number of synonyms found in it, number of synonyms where only one is 
+	 * found in that column, number of non synonyms in that column and the
+	 * number of non-synonyms where only one is found in that column. These will
+	 * then be used to measure the association between the column and "synonymy"
+	 * as defined by the training data.
 	 * 
 	 * @param fname
+	 * @param boundaryFname
+	 * @param outputFile
 	 */
 	public void loadColumnFeatures(String fname, String boundaryFname, String outputFile) {
 		int totalFeaturesCount = 0;
@@ -194,8 +115,6 @@ public class WeightFeaturesRelationSupervised {
 						String[] bParts = boundaryLine.split(" := ");
 						boundaryValue = Integer.parseInt(bParts[1]);
 						System.out.println(relation + " : " + startValue + " " + featureNumber);
-						
-						//System.out.println(SG2F + " " + nSG2F + " " + SG1F + " " + nSG1F);
 						
 						double value = 1;
 						boolean isGood = true;
@@ -243,27 +162,21 @@ public class WeightFeaturesRelationSupervised {
 					int uniqueCount = 0;
 					Hashtable<Integer, Double> wordsWithCurrentFeature = new Hashtable<Integer, Double>();
 					for(int i = 0; i < parts.length; i+=2){
-						//System.out.println(parts.length);
 						if(parts.length > 1 && goodWords.get(Integer.parseInt(parts[i]))){
 							wordsWithCurrentFeature.put(Integer.parseInt(parts[i]), Double.parseDouble(parts[i+1]));
-							//goodCount += Integer.parseInt(parts[i+1]);
 							instancesOfWordsInContext += Double.parseDouble(parts[i+1]);
 							TFofWordsInContext += wordsCount.get(Integer.parseInt(parts[i]));
 							uniqueCount++;
 						}
 					}
 					if(uniqueCount >= 2){
-						//System.out.println(uniqueCount);
-						//System.out.println(wordsWithCurrentFeature.size());
 						double[] d = getPairCounts(wordsWithCurrentFeature); // counts found pairs sharing the same feautre
 						double PairsRelatedSharingFeature = d[0]; // SG2F
 						double PairsUnrelatedSharingFeautre = d[1]; // nSG2F
 						double PairRelatedNotSharingFeature = countRelatedPairsInDifferentContexts(wordsWithCurrentFeature); // counts all pairs sharing the same feature
-						//int entries = parts.length/2;
-					
-						//System.out.println("* " + goodCount);
+						
+						
 						totalFeaturesCount ++;
-						//double PairCountSharingFeaturesNotNecessariallySG = goodCount * (goodCount-1); // counts every pair twice, so divide by 2
 						double PairsNotSharingFeature = instancesOfWordsInContext * (legitWords-TFofWordsInContext); 
 						
 						SG2F += PairsRelatedSharingFeature/10000.0;
@@ -271,17 +184,7 @@ public class WeightFeaturesRelationSupervised {
 						SG1F += PairRelatedNotSharingFeature/10000.0;// - SG2F;
 						nSG1F += (PairsNotSharingFeature - SG1F)/10000.0; // pairs unrelated & not sharing feature
 						
-						/*double value = MatrixWeighter.getTest(SG2F, nSG2F, SG1F, nSG1F, TYPE);
-						
-						
-						weights[featureNumber] = value;
-						goodWeights[featureNumber] = true;
-						*/
 					}
-					//else{
-						//weights[featureNumber] = 0;
-					//	goodWeights[featureNumber] = false;
-					//}
 					featureNumber++;
 				}
 			}
@@ -326,269 +229,6 @@ public class WeightFeaturesRelationSupervised {
 			bw.close();
 		}
 		catch(Exception e){e.printStackTrace();}
-		
-		ave = 0;
-		for(int i = 0; i < weights.length; i++){
-			if(goodWeights[i]){
-				ave += weights[i];
-			}
-		}
-		ave = ave / totalGoodWeights;
-		System.out.println("Average score: " + ave);
 	}
-
-
-
-	
-
-	/**
-	 * Counts the number of pairs of words in the same semicolon group from the provided hashSet.
-	 * 
-	 * Counts words sharing the context that are related, and counts words sharing the context that
-	 * are unrelated.
-	 * 
-	 * @param words
-	 * @return
-	 */
-	private double[] getPairCounts(Hashtable<Integer, Double> words) {
-		double positiveCount = 0;
-		double negativeCount = 0;
-		for(int word1 : words.keySet()){
-			for(int word2 : words.keySet()){
-				if(word1 != word2){
-					if(relatedPairs[word1].contains(word2)){
-						//positiveCount+= wordsCount.get(word1) * wordsCount.get(word2); //pairs with feature same SG
-						positiveCount+= words.get(word1) * words.get(word2); //pairs with feature same SG
-					}
-					else{
-						//negativeCount+= wordsCount.get(word1) * wordsCount.get(word2); // pairs with feature different SG
-						negativeCount+= words.get(word1) * words.get(word2); // pairs with feature different SG
-					}
-				}
-				/*else{
-					positiveCount+= wordsCount.get(word1) * (wordsCount.get(word2)-1.0); //pair of the same word
-				}*/
-			}
-		}
-		return new double[]{positiveCount, negativeCount};//return both
-	}
-	
-	/**
-	 * Counts all pairs of words related by Semicolon Group in the given HashSet.
-	 * 
-	 * Counts number of related words that appear in different contexts.
-	 * 
-	 * @param words
-	 * @return
-	 */
-	private double countRelatedPairsInDifferentContexts(Hashtable<Integer, Double> words) {
-		double relatedTotal = 0;
-		for(int word1 : words.keySet()){
-			for(int word2 : relatedPairs[word1]){
-				if(!words.containsKey(word2)){
-					relatedTotal += words.get(word1) * wordsCount.get(word2);
-				}
-			}
-		}
-		return relatedTotal;
-	}
-
-	/**
-	 * Identifies pairs of words that appear in the same Roget's Grouping and records them in a hashtable.
-	 */
-	@SuppressWarnings("unchecked")
-	public void colleceRelatedPairs() {
-		relatedPairs = new HashSet[words.size()];
-		for(int i = 0; i < relatedPairs.length; i++){
-			HashSet<Integer> hs = new HashSet<Integer>();
-			relatedPairs[i] = hs;
-		}
-		
-		long uniquePairs = 0;
-		for(int i = 0; i < words.size(); i++){
-			if(goodWords.get(i)){
-				String word1 = words.get(i);
-				for(int j = i+1; j < words.size(); j++){
-					if(goodWords.get(j)){
-						String word2 = words.get(j);
-						
-						uniquePairs++;
-						int similarity = bd.getSimilarity(word1, word2);
-						if(similarity == 1){
-							//System.out.println(word1 + "\t" + word2);
-							addPair(i, j);
-							addPair(j, i);
-						}
-					}
-				}
-			}
-			if(i % 1000 == 0){
-				System.out.println(i);
-			}
-		}
-		System.out.println("Unique Pairs: " + uniquePairs);
-	}
-
-	/**
-	 * Adds related words to a hashtable.
-	 * 
-	 * @param word1
-	 * @param word2
-	 */
-	private void addPair(int word1, int word2) {
-		relatedPairs[word1].add(word2);
-	}
-
-	/**
-	 * Loads the words and stores them in an arrayList. It also keeps track of which words can be used
-	 * and which are not useful (i.e. do not appear in Roget's)
-	 * 
-	 * @param fname
-	 */
-	public void loadRows(String fname) {
-		int goodWordCount = 0;
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(fname));
-
-			br.readLine(); // get first line
-	         
-			for ( ; ; ) {
-				String line = br.readLine();
-	
-				if (line == null) {
-					br.close();
-					break;
-				}
-	
-				else {
-					String parts[] = line.split(";");
-					//System.out.println(line);
-					words.add(parts[0]);
-					double wordCount = Double.parseDouble(parts[2]);
-					wordsCount.add(wordCount);
-					if(!stopWords.contains(parts[0]) && bd.existsWord(parts[0])){
-						legitWords += wordCount;
-						goodWords.add(true);
-						goodWordCount++;
-					}
-					else{
-						goodWords.add(false);
-					}
-				}
-			}
-	
-		} catch (Exception e) {
-	    	 e.printStackTrace();
-		}
-		System.out.println("Unique training words: " + goodWordCount);
-		System.out.println("Total words: " + words.size());
-		System.out.println("Occurrences of training words: " + legitWords);
-	}
-	
-	/**
-	 * Adjusts the row weights and legitWords mid run. Only used
-	 * when applying supervision on top of another method.
-	 * 
-	 * @param fname
-	 */
-	public void adjustRows(String fname) {
-		legitWords = 0;
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(fname));
-
-			br.readLine(); // get first line
-			int count = 0;
-	         
-			for ( ; ; ) {
-				String line = br.readLine();
-	
-				if (line == null) {
-					br.close();
-					break;
-				}
-	
-				else {
-					String parts[] = line.split(" ");
-					double wordCount = 0;
-					for(int i = 0; i < parts.length; i+=2){
-						wordCount += Double.parseDouble(parts[i+1]);
-					}
-					//words.add(parts[0]);
-					//double wordCount = Double.parseDouble(parts[2]);
-					wordsCount.set(count, wordCount);
-					if(goodWords.get(count)){
-						legitWords += wordCount;
-					}
-					count++;
-				}
-			}
-	
-		} catch (Exception e) {
-	    	 e.printStackTrace();
-		}
-		System.out.println(words.size());
-		System.out.println(legitWords);
-		
-	}
-	
-	/**
-	 * Loads stop word list
-	 * 
-	 * @param fname
-	 */
-	public void loadStopWordList(String fname) {
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(fname));
-	         
-			for ( ; ; ) {
-				String line = br.readLine();
-	
-				if (line == null) {
-					br.close();
-					break;
-				}
-	
-				else {
-					stopWords.add(line);
-				}
-			}
-	
-		} catch (Exception e) {
-	    	 e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Loads exempt words and stores them in the stopWords list.
-	 * 
-	 * @param fname
-	 */
-	public void loadExemptWords(String fname) {
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(fname));
-	         
-			for ( ; ; ) {
-				String line = br.readLine();
-	
-				if (line == null) {
-					br.close();
-					break;
-				}
-	
-				else {
-					String[] parts = line.split(" ");
-					stopWords.add(parts[0]);
-					//stopWords.add(parts[1]);
-					//stopWords.add(parts[2]);
-				}
-			}
-	
-		} catch (Exception e) {
-	    	 e.printStackTrace();
-		}
-	}
-
-
-	
 
 }

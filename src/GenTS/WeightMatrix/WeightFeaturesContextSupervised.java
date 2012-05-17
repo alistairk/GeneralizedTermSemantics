@@ -29,19 +29,17 @@ import java.util.Hashtable;
  *
  */
 public class WeightFeaturesContextSupervised {
-	private HashSet<String> stopWords;
-	private ArrayList<String> words;
-	private ArrayList<Double> wordsCount;
-	private ArrayList<Boolean> goodWords;
-	private HashSet<Integer>[] relatedPairs;
+	protected HashSet<String> stopWords;
+	protected ArrayList<String> words;
+	protected ArrayList<Double> wordsCount;
+	protected ArrayList<Boolean> goodWords;
+	protected HashSet<Integer>[] relatedPairs;
 
-	private BinaryDist bd;
-	private double[] weights;
-	private long legitWords;
-	//private int positivePairs;
+	protected BinaryDist bd;
+	protected double[] weights;
+	protected long legitWords;
 	
-	private String TYPE;
-	//private String POS;
+	protected String TYPE;
 	
 	/**
 	 * The main function reads in the arguments and then creates a new WeightFeaturesSuprvised
@@ -62,22 +60,22 @@ public class WeightFeaturesContextSupervised {
 		String outputColumnWeights = args[5];
 		
 		//names of re-weighted files
-		String newRowMatrixFile = rowMatrixFile+".t"+association;
-		String newColumnMatrixFile = columnMatrixFile+".t"+association;
+		String newRowMatrixFile = rowMatrixFile+".c-"+association;
+		String newColumnMatrixFile = columnMatrixFile+".c-"+association;
 				
-		WeightFeaturesContextSupervised wfrs = new WeightFeaturesContextSupervised(trainingData, rowMatrixFile, association);
+		WeightFeaturesContextSupervised wfcs = new WeightFeaturesContextSupervised(trainingData, rowMatrixFile, association);
 		
 		//load row file
-		wfrs.loadRows(rowFeaturesFile);
+		wfcs.loadRows(rowFeaturesFile);
 		
 		//assembles training data into a hashtable, only words found in the matrix are used.
-		wfrs.colleceRelatedPairs();
+		wfcs.colleceRelatedPairs();
 
 		//loads columns and calculates the weights for each feature
-		wfrs.loadColumnFeatures(columnMatrixFile, outputColumnWeights);
+		wfcs.loadColumnFeatures(columnMatrixFile, outputColumnWeights);
 		
 		//creates new row matrix using these features
-		wfrs.weightRowFeatures(rowMatrixFile, newRowMatrixFile);
+		wfcs.weightRowFeatures(rowMatrixFile, newRowMatrixFile);
 		
 		//translates the row matrix into a column matrix using the function in WeightFeaturesUnsupervised
 		WeightFeaturesUnsupervised wfu = new WeightFeaturesUnsupervised();
@@ -324,22 +322,8 @@ public class WeightFeaturesContextSupervised {
 			bw.close();
 		}
 		catch(Exception e){e.printStackTrace();}
-		
-		//calculate new average just to confirm weight, really just for debugging.
-		//TODO remove this part
-		ave = 0;
-		for(int i = 0; i < weights.length; i++){
-			if(goodWeights[i]){
-				ave += weights[i];
-			}
-		}
-		ave = ave / totalGoodWeights;
-		System.out.println("Average score: " + ave);
 	}
 
-
-
-	
 
 	/**
 	 * Counts the number of pairs of words in the same semicolon group from the provided hashSet.
@@ -350,24 +334,19 @@ public class WeightFeaturesContextSupervised {
 	 * @param words
 	 * @return
 	 */
-	private double[] getPairCounts(Hashtable<Integer, Double> words) {
+	protected double[] getPairCounts(Hashtable<Integer, Double> words) {
 		double positiveCount = 0;
 		double negativeCount = 0;
 		for(int word1 : words.keySet()){
 			for(int word2 : words.keySet()){
 				if(word1 != word2){
 					if(relatedPairs[word1].contains(word2)){
-						//positiveCount+= wordsCount.get(word1) * wordsCount.get(word2); //pairs with feature same SG
 						positiveCount+= words.get(word1) * words.get(word2); //pairs with feature same SG
 					}
 					else{
-						//negativeCount+= wordsCount.get(word1) * wordsCount.get(word2); // pairs with feature different SG
 						negativeCount+= words.get(word1) * words.get(word2); // pairs with feature different SG
 					}
 				}
-				/*else{
-					positiveCount+= wordsCount.get(word1) * (wordsCount.get(word2)-1.0); //pair of the same word
-				}*/
 			}
 		}
 		return new double[]{positiveCount, negativeCount};//return both
@@ -381,7 +360,7 @@ public class WeightFeaturesContextSupervised {
 	 * @param words
 	 * @return
 	 */
-	private double countRelatedPairsInDifferentContexts(Hashtable<Integer, Double> words) {
+	protected double countRelatedPairsInDifferentContexts(Hashtable<Integer, Double> words) {
 		double relatedTotal = 0;
 		for(int word1 : words.keySet()){
 			for(int word2 : relatedPairs[word1]){
@@ -487,54 +466,6 @@ public class WeightFeaturesContextSupervised {
 		System.out.println("Unique training words: " + goodWordCount);
 		System.out.println("Total words: " + words.size());
 		System.out.println("Occurrences of training words: " + legitWords);
-	}
-	
-	/**
-	 * Adjusts the row weights and legitWords mid run. Only used
-	 * when applying supervision on top of another method. This
-	 * function perhaps should be removed
-	 * TODO: maybe remove this function.
-	 * 
-	 * @param fname
-	 */
-	public void adjustRows(String fname) {
-		legitWords = 0;
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(fname));
-
-			br.readLine(); // get first line
-			int count = 0;
-	         
-			for ( ; ; ) {
-				String line = br.readLine();
-	
-				if (line == null) {
-					br.close();
-					break;
-				}
-	
-				else {
-					String parts[] = line.split(" ");
-					double wordCount = 0;
-					for(int i = 0; i < parts.length; i+=2){
-						wordCount += Double.parseDouble(parts[i+1]);
-					}
-					//words.add(parts[0]);
-					//double wordCount = Double.parseDouble(parts[2]);
-					wordsCount.set(count, wordCount);
-					if(goodWords.get(count)){
-						legitWords += wordCount;
-					}
-					count++;
-				}
-			}
-	
-		} catch (Exception e) {
-	    	 e.printStackTrace();
-		}
-		System.out.println(words.size());
-		System.out.println(legitWords);
-		
 	}
 	
 

@@ -36,14 +36,14 @@ public class MatrixWeighter {
 		else if(measureType.equals("Zscore")){
 			toReturn = zscore(observed, expected);
 		}
-		else if(measureType.equals("F")){
-			toReturn = F(observed);
+		else if(measureType.equals("Dice")){
+			toReturn = dice(observed);
 		}
 		else if(measureType.equals("PMI")){
 			toReturn = pmi(observed, expected);
 		}
 		else if(measureType.equals("LL")){
-			toReturn = LL(observed, expected);
+			toReturn = ll(observed, expected);
 		}
 		else if(measureType.equals("Chi2")){
 			toReturn = chi2(observed, expected);
@@ -154,12 +154,12 @@ public class MatrixWeighter {
 	}
 	
 	/**
-	 * Calculates f-measure
+	 * Calculates Dice coefficient.
 	 * 
 	 * @param observed
 	 * @return
 	 */
-	public static double F(double[][] observed){
+	public static double dice(double[][] observed){
 		double P = observed[0][0]/getR(observed,0);
 		double R = observed[0][0]/getC(observed,0);
 		if(P == 0.0 || R == 0.0){
@@ -238,7 +238,7 @@ public class MatrixWeighter {
 	 * @param expected
 	 * @return
 	 */
-	public static double LL(double[][] observed, double[][] expected){
+	public static double ll(double[][] observed, double[][] expected){
 		double LL = 0;
 		for(int i = 0; i < observed.length; i++){ //row
 			for(int j = 0; j < observed[i].length; j++){ //column
