@@ -4,6 +4,15 @@ semantic relatedness between pairs of terms. Its main functionality is to determ
 between word pairs and to generate lists of the closest related words to a given target word.
 It is provided without a warranty.
 
+This package includes the following
+GenTS.jar	-- a jar file containing executables of GenTS
+README		-- this readme
+src/		-- the source code for GenTS.jar
+data/		-- sample data including a sample matrix, training data and sample parsed text
+data/sampleMatrix_n/	-- sample matrix and its files
+data/sampleParsed.txt	-- sample of Minipar parsed data
+data/trainingData/	-- sample training data for nouns, verbs and adjectives.
+
 Further explanation as to what this package does and some of the experiments conducted with it can be found 
 in the following paper. To cite this work please reference:
 
