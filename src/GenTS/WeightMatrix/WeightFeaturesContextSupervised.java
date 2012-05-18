@@ -14,13 +14,19 @@ import java.util.Hashtable;
  * of:
  * Alistair Kennedy, Stan Szpakowicz (2011). “A Supervised Method of Feature Weighting for Measuring Semantic Relatedness”. 
  * In Proceedings of Canadian AI 2011, St. John’s, Newfoundland, Canada, May 25-27, 222-233.
+ * and
+ * Alistair Kennedy, Stan Szpakowicz (2012). “Supervised Distributional Semantic Relatedness”. 
+ * To appear in the Proceedings of Text Speech Dialogue 2012.
+ * 
+ * Every context in the term-context matrix is given a unique weight based upon the number of synonym and non-synonym
+ * pairs that appear in it.
  * 
  * This program takes in a measure of association, a file containing training data, the rowfeatures.cvs file, the 
  * row and column matrix files and an output file for the column weights as parameters. The output file for column
  * weights is not essential for this program, but may be of some interest to those running it.
  * 
  * To Run Program: 
- * java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <output column file>
+ * java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>
  * 
  * Three new files will be created, new row and column matrix files and another file indicating the weights of the 
  * different contexts.
@@ -49,7 +55,7 @@ public class WeightFeaturesContextSupervised {
 	 */
 	public static void main(String[] args) {
 		if(args.length != 5){
-			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>");
+			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>");
 			return;
 		}
 		String association = args[0]; 
@@ -255,9 +261,9 @@ public class WeightFeaturesContextSupervised {
 						//check for a few common errors
 						//shouldn't matter now but factored in during debugging.
 						if(Double.isNaN(value) || Double.isInfinite(value) || tn < 0){
-							System.out.println(featureNumber);
-							System.out.println((int)tp + " " + (int)fp);
-							System.out.println((int)fn + " " + (int)tn);
+							System.out.println("Error at feature: "+featureNumber);
+							System.out.println((long)tp + " " + (long)fp);
+							System.out.println((long)fn + " " + (long)tn);
 							System.out.println(value);
 							System.out.println();
 						}
@@ -267,7 +273,6 @@ public class WeightFeaturesContextSupervised {
 						goodWeights[featureNumber] = true;
 					}
 					else{
-						//weights[featureNumber] = 0;
 						goodWeights[featureNumber] = false;
 					}
 					featureNumber++;
@@ -287,15 +292,11 @@ public class WeightFeaturesContextSupervised {
 		
 		//find average feature weight
 		double ave = 0;
-		double min = Double.MAX_VALUE;
 		double totalGoodWeights = 0;
 		for(int i = 0; i < weights.length; i++){
 			if(goodWeights[i]){
 				ave += weights[i];
 				totalGoodWeights++;
-				if(weights[i] < min){
-					min = weights[i];
-				}
 			}
 		}
 		ave = ave / totalGoodWeights;
@@ -303,7 +304,6 @@ public class WeightFeaturesContextSupervised {
 			System.out.println("Not a number");
 		}
 		System.out.println("Average score: " + ave);
-		System.out.println("Min score: " + min);
 		
 		//normalize average to 1.0 
 		//print out the new weights into the column weight file.

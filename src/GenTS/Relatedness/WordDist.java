@@ -1,4 +1,4 @@
-package GenTS.Distance;
+package GenTS.Relatedness;
 
 /**
  * this is a class used to keep track of a word, similarity pair, it is used

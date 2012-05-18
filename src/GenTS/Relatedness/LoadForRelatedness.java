@@ -1,4 +1,4 @@
-package GenTS.Distance;
+package GenTS.Relatedness;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -66,19 +66,13 @@ public class LoadForRelatedness {
 		
 		LoadForRelatedness loader = new LoadForRelatedness(args[0], args[1]);
 		
-		System.out.println("Distance between \"cat\" and \"cat\": " + loader.distance("cat", "cat"));
-		System.out.println("Distance between \"cat\" and \"dog\": " + loader.distance("cat", "dog"));
-		System.out.println("Distance between \"dog\" and \"cat\": " + loader.distance("dog", "cat"));
-		System.out.println("Distance between \"laugh\" and \"fight\": " + loader.distance("laugh", "fight"));
-		System.out.println("Distance between \"fight\" and \"laugh\": " + loader.distance("fight", "laugh"));
-		System.out.println("Distance between \"fight\" and \"asdf\": " + loader.distance("fight", "asdf"));
-		long start = new Date().getTime();
+		System.out.println("Distance between \"boy\" and \"boy\": " + loader.distance("boy", "boy"));
+		System.out.println("Distance between \"boy\" and \"girl\": " + loader.distance("boy", "girl"));
+		System.out.println("Distance between \"girl\" and \"boy\": " + loader.distance("girl", "boy"));
+
 		System.out.println();
-		System.out.println("List of the top 100 closest words to \"monkey\":");
-		loader.printWordArray(loader.getClosestWords("monkey", 100));
-		long end = new Date().getTime();
-		long difference = end-start;
-		System.out.println("time to find neighbours of \"monkey\": " + difference);
+		System.out.println("List of the top 10 closest words to \"geometry\":");
+		loader.printWordArray(loader.getClosestWords("geometry", 10));
 	}
 	
 	/**
@@ -181,7 +175,7 @@ public class LoadForRelatedness {
 		try{
 			id2 = words.get(word2);
 		} catch(Exception e){
-			return -2;
+			return -1;
 		}
 		//get TreeMap vectors for both the words and calculate the denominator
 		TreeMap<Integer, Float> row1 = matrix.get(id1);

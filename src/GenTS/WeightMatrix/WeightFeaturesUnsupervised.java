@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * 
  * Run the program like this:
  * 
- * java WeightFeaturesUnsupervised <n|v|a> <PMI|LL|F|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>
+ * java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>
  * 
  * @author akennedy
  *
@@ -40,7 +40,7 @@ public class WeightFeaturesUnsupervised {
 	 */
 	public static void main(String[] args) {
 		if(args.length != 4){
-			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>");
+			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>");
 			return;
 		}
 		
@@ -50,8 +50,8 @@ public class WeightFeaturesUnsupervised {
 		String columnMatrixFile = args[3];
 		
 		//names of reweighted files
-		String newRowMatrixFile = rowMatrixFile+"."+association;
-		String newColumnMatrixFile = columnMatrixFile+"."+association;
+		String newRowMatrixFile = rowMatrixFile+".u-"+association;
+		String newColumnMatrixFile = columnMatrixFile+".u-"+association;
 		
 		System.out.println(association);
 		

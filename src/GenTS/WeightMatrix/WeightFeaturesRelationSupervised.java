@@ -8,7 +8,27 @@ import java.util.Hashtable;
 
 
 /**
- * This class performs supervised Matrix weighting.
+ * This class performs supervised Matrix weighting. Much like WeightFeaturesUnsupervised this program takes
+ * in an already constructed matrix and produces one with a different weight. This is based off of the work
+ * of:
+ * Alistair Kennedy, Stan Szpakowicz (2012). “Supervised Distributional Semantic Relatedness”. 
+ * To appear in the Proceedings of Text Speech Dialogue 2012.
+ * 
+ * Groups of contexts in the term-context matrix are grouped together based on syntactic relationship and then these
+ * groups are given scores based on how frequently they contain known synonym and non-synonym pairs of words.
+ * 
+ * This program takes in a measure of association, a file containing training data, the rowfeatures.cvs file, the 
+ * row and column matrix files and an output file for the column weights as parameters. The output file for column
+ * weights is not essential for this program, but may be of some interest to those running it.
+ * 
+ * To Run Program: 
+ * java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>
+ * 
+ * Three new files will be created, new row and column matrix files and another file indicating the weights of the 
+ * different contexts.
+ * 
+ * This class extends WeightFeaturesContextSupervised as almost all the methods are identical except for one
+ * that determines weights for each context. A new method performs this task.
  * 
  * @author akennedy
  *
@@ -23,7 +43,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 	 */
 	public static void main(String[] args) {
 		if(args.length != 6){
-			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>");
+			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>");
 			return;
 		}
 		String association = args[0]; 
@@ -76,15 +96,18 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 	/**
 	 * This function does most of the work. It reads in the column matrix and then
 	 * finds weights for each entry in the column. The column matrix is the first
-	 * argument and the second argument is the file that we will be column values
-	 * to. 
+	 * argument and the second argument is a file containing boundaries on groups
+	 * of columns and the third argument is name of the file that the newly weighted
+	 * columns are printed to. 
 	 * 
-	 * This function will iterate through each column in the matrix counting the 
-	 * number of synonyms found in it, number of synonyms where only one is 
-	 * found in that column, number of non synonyms in that column and the
-	 * number of non-synonyms where only one is found in that column. These will
-	 * then be used to measure the association between the column and "synonymy"
-	 * as defined by the training data.
+	 * This function groups together columns in the matrix as indicated by the 
+	 * boundaryFname. This will group together features based on their syntactic
+	 * relationship. Then the function will iterate through the groups of columns 
+	 * in the matrix counting the number of synonyms found in it, number of 
+	 * synonyms where only one is found in that column, number of non synonyms in 
+	 * that column and the number of non-synonyms where only one is found in that 
+	 * column. These will then be used to measure the association between the 
+	 * column and "synonymy" as defined by the training data.
 	 * 
 	 * @param fname
 	 * @param boundaryFname
@@ -93,7 +116,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 	public void loadColumnFeatures(String fname, String boundaryFname, String outputFile) {
 		int totalFeaturesCount = 0;
 		int startValue = 0;
-		String relation = "";
+		//String relation = "";
 		int featureNumber = 0;
 		int boundaryValue = 0;
 		boolean[] goodWeights = new boolean[weights.length];
@@ -102,10 +125,10 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 			BufferedReader boundaryReader = new BufferedReader(new FileReader(boundaryFname));
 			br.readLine(); // get first line
 			
-			double SG2F = 0;
-			double nSG2F = 0;
-			double SG1F = 0;
-			double nSG1F = 0;
+			double tp = 0;
+			double fp = 0;
+			double tn = 0;
+			double fn = 0;
 			
 			for ( ; ; ) {
 				
@@ -114,20 +137,20 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 					if(boundaryLine != null){
 						String[] bParts = boundaryLine.split(" := ");
 						boundaryValue = Integer.parseInt(bParts[1]);
-						System.out.println(relation + " : " + startValue + " " + featureNumber);
+						//System.out.println(relation + " : " + startValue + " " + featureNumber);
 						
 						double value = 1;
 						boolean isGood = true;
-						value = MatrixWeighter.getAssociation(SG2F, nSG2F, SG1F, nSG1F, TYPE);
-						if(nSG1F > 0 && (Double.isNaN(value) || Double.isInfinite(value))){
-							System.out.println(featureNumber);
-							System.out.println((int)SG2F + " " + (int)nSG2F);
-							System.out.println((int)SG1F + " " + (int)nSG1F);
+						value = MatrixWeighter.getAssociation(tp, fp, tn, fn, TYPE);
+						if(fn > 0 && (Double.isNaN(value) || Double.isInfinite(value))){
+							System.out.println("Error at feature: "+featureNumber);
+							System.out.println((long)tp + " " + (long)fp);
+							System.out.println((long)tn + " " + (long)fn);
 							System.out.println(value);
 							System.out.println();
 						}
-						if(SG2F + nSG2F + SG1F + nSG1F == 0){
-							System.out.println("zero");
+						if(tp + fp + tn + fn == 0){
+							//System.out.println("zero");
 							isGood = false;
 							value = 1;
 						}
@@ -135,12 +158,12 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 							weights[i] = value;
 							goodWeights[i] = isGood;
 						}
-						relation = bParts[0];
+						//relation = bParts[0];
 						
-						SG2F = 0;
-						nSG2F = 0;
-						SG1F = 0;
-						nSG1F = 0;
+						tp = 0;
+						fp = 0;
+						tn = 0;
+						fn = 0;
 	
 						startValue = featureNumber;
 					}
@@ -179,10 +202,10 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 						totalFeaturesCount ++;
 						double PairsNotSharingFeature = instancesOfWordsInContext * (legitWords-TFofWordsInContext); 
 						
-						SG2F += PairsRelatedSharingFeature/10000.0;
-						nSG2F += PairsUnrelatedSharingFeautre/10000.0;
-						SG1F += PairRelatedNotSharingFeature/10000.0;// - SG2F;
-						nSG1F += (PairsNotSharingFeature - SG1F)/10000.0; // pairs unrelated & not sharing feature
+						tp += PairsRelatedSharingFeature/10000.0;
+						fp += PairsUnrelatedSharingFeautre/10000.0;
+						tn += PairRelatedNotSharingFeature/10000.0;// - SG2F;
+						fn += (PairsNotSharingFeature - tn)/10000.0; // pairs unrelated & not sharing feature
 						
 					}
 					featureNumber++;
@@ -194,15 +217,11 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 		}
 		System.out.println("Features included: " + totalFeaturesCount);
 		double ave = 0;
-		double min = Double.MAX_VALUE;
 		double totalGoodWeights = 0;
 		for(int i = 0; i < weights.length; i++){
 			if(goodWeights[i]){
 				ave += weights[i];
 				totalGoodWeights++;
-				if(weights[i] < min){
-					min = weights[i];
-				}
 			}
 		}
 		ave = ave / totalGoodWeights;
@@ -210,7 +229,6 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 			System.out.println("Not a number");
 		}
 		System.out.println("Average score: " + ave);
-		System.out.println("Min score: " + min);
 		
 		//normalize average to 1.0
 
