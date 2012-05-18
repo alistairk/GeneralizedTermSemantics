@@ -1,24 +1,228 @@
+This is the README file for the Java package Generalized TermSemantics (GenTS) v0.1
+This file contains instructions for building, reweighting and using a term-context matrix for measuring
+semantic relatedness between pairs of terms. Its main functionality is to determine a similarity score
+between word pairs and to generate lists of the closest related words to a given target word.
+It is provided without a warranty.
+
+Further explanation as to what this package does and some of the experiments conducted with it can be found 
+in the following paper. To cite this work please reference:
+
+Alistair Kennedy, Stan Szpakowicz (2010). "Supervised Distributional Semantic Relatedness". 
+To appear in the Proceedings of the 15th International Conference on Text, Speech and Dialogue 
+TSD 2012, Brno, Czech Republic.
+
+For more information please contact:
+Alistair Kennedy
+akennedy@eecs.uottawa.ca
+
+
+Building and using a term-context matrix:
+
+Step 0
+
+Parse some text with a dependency parser, an example of such a file can be seen in: data/sampleParsed.txt
+This parse was done using Minipar, however any dependency parse can be used provided the output is altered
+to be of the same format.
+
 Step 1
 
-To build a matrix run:
-java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
+This step builds a matrix. Separate matrices can be built from nouns (N), verbs (V) or adjectives (A). 
+An output directory must be specified and the name of the matrix is also needed. A new directory will be
+created using the name of the matrix. The minimum term and feature (context) frequency is also requested.
+I recommend 35 and 2 for nouns and adjectives and 10 and 2 for verbs. Next a list of parsed files must be
+listed.
+
+The matrix files are nearly identical in design to those produced by the SuperMatrix package.
+
+To Run Program: java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
+e.g.
+$ java -cp GenTS.jar:. GenTS.BuildMatrix.BuildMatrix N . newMatrix 35 2 data/sampleParsed.txt 
+Directory: ./newMatrix created
+Loading: data/sampleParsed.txt
+14036 : 52728 : 270615
+Building: ./newMatrix/newMatrix.clabel
+Building: ./newMatrix/newMatrix.rlabel
+2328 : 23321 : 179944
+Building: ./newMatrix/matrix_crs.mat
+Processed 10000 rows
+Building: ./newMatrix/matrix_ccs.mat
+Written 10000 columns
+Written 20000 columns
+
+The following files will be produced:
+
+newMatrix/boundary.txt		-- boundaries between features types (syntactic relations)
+newMatrix/info.txt		-- information about the size of the matrix
+newMatrix/newMatrix.rlabel	-- lists the words in the matrix
+newMatrix/column_features.csv	-- lists column features along with counts and entropy information
+newMatrix/matrix_ccs.mat	-- a sparse matrix which lists non-zero rows for each column
+newMatrix/matrix_crs.mat	-- a sparse matrix which lists non-zero columns for each row
+newMatrix/newMatrix.clabel	-- lists the contexts in the matrix
+newMatrix/row_features.csv	-- lists row features along with counts and entropy information
+
 
 Step2
 
-Reweight the matrix with either the unsupervised, context-supervised or relation-supervised system. Choose one of these three:
+Reweight the matrix with either the unsupervised, context-supervised or relation-supervised system. One of six measure of association can
+be used in re-weighting the matrix, those are Pointwise Mutual Information (PMI), Log Likelihood (LL), Dice, T-score, Z-score and Chi-squared (Chi2).
+I recommend PMI as a tool for re-weighting matrices. Re-weighting can be done in the standard unsupervised manner, or training data can be used to 
+enhance the process. The row and column files
+
+Choose one of these three:
 
 unsupervised:
 To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>
+e.g.
+$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised PMI newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat 
+PMI
+words: 2328
+
+381624.0
+1000
+2000
+
+creates a new matrix with the suffix "u-PMI":
+newMatrix/matrix_ccs.mat.u-PMI	
+newMatrix/matrix_crs.mat.u-PMI
+
 
 context-supervised:
-To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <output column file>
+
+This program will make use of supervised training data for example, see the training data files in: data/trainingData/
+There should be one for each of three parts of speech.
+
+To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>
+e.g.
+$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesContextSupervised Dice data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat
+Unique training words: 1978
+Total words: 2328
+Occurrences of training words: 318382
+0
+1000
+2000
+Unique Pairs: 1955253
+Features processed: 1000
+Features processed: 2000
+Features processed: 3000
+Features processed: 4000
+Features processed: 5000
+Features processed: 6000
+Features processed: 7000
+Features processed: 8000
+Features processed: 9000
+Features processed: 10000
+Features processed: 11000
+Features processed: 12000
+Features processed: 13000
+Features processed: 14000
+Features processed: 15000
+Features processed: 16000
+Features processed: 17000
+Features processed: 18000
+Features processed: 19000
+Features processed: 20000
+Features processed: 21000
+Features processed: 22000
+Features processed: 23000
+Features included: 15305
+Average score: 6.873022157179207E-4
+1000
+2000
+
+creates a new matrix with the suffix "c-Dice":
+newMatrix/matrix_ccs.mat.c-Dice		-- re-weighted spearse column oriented matrix
+newMatrix/matrix_crs.mat.c-Dice		-- re-weighted sparse row oriented matrix
+columns_context_Dice.txt		-- list of new column weights
+
 
 relation-supervised:
-needs fixing
+
+This runs much like context-supervised but requires the boundary.txt file to be included when running.
+
+To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>
+e.g.
+$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesRelationSupervised LL data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat newMatrix/boundary.txt 
+Unique training words: 1978
+Total words: 2328
+Occurrences of training words: 318382
+0
+1000
+2000
+Unique Pairs: 1955253
+Features included: 15305
+Average score: 3.045733070890246
+1000
+2000
+
+creates a new matrix with the suffix "r-LL":
+newMatrix/matrix_ccs.mat.r-LL		-- re-weighted spearse column oriented matrix
+newMatrix/matrix_crs.mat.r-LL		-- re-weighted sparse row oriented matrix
+newMatrix/columns_relation_LL.txt	-- list of new column weights
+
 
 Step 2a
 
 If you used supervised Matrix reweighting then you can run the unsupervised re-weighting on top of it.
 This was found to create the best results.
+
+e.g.
+$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised Tscore newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.r-Dice newMatrix/matrix_ccs.mat.r-Dice 
+Tscore
+words: 2328
+
+1247633.1258486991
+1000
+2000
+
+creates a new matrix with the suffix "r-Dice.u-Tscore"
+newMatrix/matrix_ccs.mat.r-Dice.u-Tscore	-- re-weighted spearse column oriented matrix
+newMatrix/matrix_crs.mat.r-Dice.u-Tscore	-- re-weighted sparse row oriented matrix
+
+
+Step 3
+
+The next step is to actually use the matrix. For the most part you may want to write your own code
+to run experiments. Accessing the matrix is done through the class LoadForRelatedness. First 
+instantiate the class passing it the path to the rlable file and the matrix_crs.mat file of your choice.
+Then use either the distance or getClosestWords functions.
+
+String rlab = "newMatrix/newMatrix.rlabel";
+String mat = "newMatrix/matrix_crs.mat.r-Dice.u-Tscore";
+
+LoadForRelatedness loader = new LoadForRelatedness(rlab, mat);
+
+float dist= loader.distance("cat", "dog");
+
+System.out.println("Distance from cat to dog: " + dist);
+
+WordDist[] neighbours = loader.getClosestWords("monkey", 10);
+loader.printWordArray(neighbours);
+
+If one word in a word pair is not found then it receives a score of -1.
+
+To see an example of this running you can run the LoadForRelatedness class:
+
+To Run Program: java LoadForCosine <path to rlabel file> <path to matrix_crs.mat file>
+e.g.
+$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.r-Dice.u-Tscore 
+Distance between "boy" and "boy": 1.0000001
+Distance between "boy" and "girl": 0.34890193
+Distance between "girl" and "boy": 0.34890193
+
+List of the top 10 closest words to "geometry":
+alchemy (0.48653656), cinema (0.4306628), aikido (0.41665152), chemistry (0.41093987), western (0.4085479), bronze (0.40718699), mathematics (0.4046753), confederation (0.40298828), our (0.40256217), communism (0.39787552)
+
+or
+
+$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat
+Distance between "boy" and "boy": 1.0
+Distance between "boy" and "girl": 0.48241818
+Distance between "girl" and "boy": 0.48241818
+
+List of the top 10 closest words to "geometry":
+alchemy (0.65953034), agriculture (0.6533324), chemistry (0.6336132), philosophy (0.6304994), choice (0.62729865), art (0.6239595), vision (0.623698), light (0.62046444), violence (0.6185485), humanity (0.6164602)
+
+
+
 
 
