@@ -55,7 +55,7 @@ public class WeightFeaturesContextSupervised {
 	 */
 	public static void main(String[] args) {
 		if(args.length != 5){
-			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>");
+			System.out.println("To Run Program: java WeightFeaturesContextSupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>");
 			return;
 		}
 		String association = args[0]; 

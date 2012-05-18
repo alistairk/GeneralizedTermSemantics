@@ -43,7 +43,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 	 */
 	public static void main(String[] args) {
 		if(args.length != 6){
-			System.out.println("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>");
+			System.out.println("To Run Program: java WeightFeaturesRelationSupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>");
 			return;
 		}
 		String association = args[0]; 
@@ -116,7 +116,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 	public void loadColumnFeatures(String fname, String boundaryFname, String outputFile) {
 		int totalFeaturesCount = 0;
 		int startValue = 0;
-		//String relation = "";
+		String relation = "";
 		int featureNumber = 0;
 		int boundaryValue = 0;
 		boolean[] goodWeights = new boolean[weights.length];
@@ -137,7 +137,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 					if(boundaryLine != null){
 						String[] bParts = boundaryLine.split(" := ");
 						boundaryValue = Integer.parseInt(bParts[1]);
-						//System.out.println(relation + " : " + startValue + " " + featureNumber);
+						System.out.println(relation + " : " + startValue + " " + featureNumber);
 						
 						double value = 1;
 						boolean isGood = true;
@@ -158,7 +158,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 							weights[i] = value;
 							goodWeights[i] = isGood;
 						}
-						//relation = bParts[0];
+						relation = bParts[0];
 						
 						tp = 0;
 						fp = 0;
