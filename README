@@ -70,7 +70,7 @@ newMatrix/newMatrix.clabel	-- lists the contexts in the matrix
 newMatrix/row_features.csv	-- lists row features along with counts and entropy information
 
 
-Step2
+Step 2
 
 Reweight the matrix with either the unsupervised, context-supervised or relation-supervised system. One of six measure of association can
 be used in re-weighting the matrix, those are Pointwise Mutual Information (PMI), Log Likelihood (LL), Dice, T-score, Z-score and Chi-squared (Chi2).
@@ -100,7 +100,7 @@ context-supervised:
 This program will make use of supervised training data for example, see the training data files in: data/trainingData/
 There should be one for each of three parts of speech.
 
-To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>
+To Run Program: java WeightFeaturesContextSupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>
 e.g.
 $ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesContextSupervised Dice data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat
 Unique training words: 1978
@@ -148,7 +148,7 @@ relation-supervised:
 
 This runs much like context-supervised but requires the boundary.txt file to be included when running.
 
-To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>
+java WeightFeaturesRelationSupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>
 e.g.
 $ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesRelationSupervised LL data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat newMatrix/boundary.txt 
 Unique training words: 1978
@@ -158,6 +158,12 @@ Occurrences of training words: 318382
 1000
 2000
 Unique Pairs: 1955253
+ : 0 0
+amount-value-R : 0 1
+as-arg-R : 1 3
+... (lots of output here)
+pred-R : 23313 23314
+s-R : 23314 23315
 Features included: 15305
 Average score: 3.045733070890246
 1000
@@ -215,11 +221,11 @@ To Run Program: java LoadForCosine <path to rlabel file> <path to matrix_crs.mat
 e.g.
 $ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice.u-Tscore 
 Distance between "boy" and "boy": 1.0000001
-Distance between "boy" and "girl": 0.34890193
-Distance between "girl" and "boy": 0.34890193
+Distance between "boy" and "girl": 0.4097439
+Distance between "girl" and "boy": 0.4097439
 
 List of the top 10 closest words to "geometry":
-alchemy (0.48653656), cinema (0.4306628), aikido (0.41665152), chemistry (0.41093987), western (0.4085479), bronze (0.40718699), mathematics (0.4046753), confederation (0.40298828), our (0.40256217), communism (0.39787552)
+anthropology (0.74332416), alchemy (0.71357536), aikido (0.6964221), art (0.6943861), communism (0.6789571), cinema (0.678228), protein (0.6683792), folklore (0.6606066), ambergris (0.65492034), antimony (0.64818305)
 
 or
 
