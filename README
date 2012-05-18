@@ -175,7 +175,7 @@ If you used supervised Matrix reweighting then you can run the unsupervised re-w
 This was found to create the best results.
 
 e.g.
-$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised Tscore newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.r-Dice newMatrix/matrix_ccs.mat.r-Dice 
+$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised Tscore newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice newMatrix/matrix_ccs.mat.c-Dice 
 Tscore
 words: 2328
 
@@ -183,9 +183,9 @@ words: 2328
 1000
 2000
 
-creates a new matrix with the suffix "r-Dice.u-Tscore"
-newMatrix/matrix_ccs.mat.r-Dice.u-Tscore	-- re-weighted spearse column oriented matrix
-newMatrix/matrix_crs.mat.r-Dice.u-Tscore	-- re-weighted sparse row oriented matrix
+creates a new matrix with the suffix "c-Dice.u-Tscore"
+newMatrix/matrix_ccs.mat.c-Dice.u-Tscore	-- re-weighted spearse column oriented matrix
+newMatrix/matrix_crs.mat.c-Dice.u-Tscore	-- re-weighted sparse row oriented matrix
 
 
 Step 3
@@ -196,7 +196,7 @@ instantiate the class passing it the path to the rlable file and the matrix_crs.
 Then use either the distance or getClosestWords functions.
 
 String rlab = "newMatrix/newMatrix.rlabel";
-String mat = "newMatrix/matrix_crs.mat.r-Dice.u-Tscore";
+String mat = "newMatrix/matrix_crs.mat.c-Dice.u-Tscore";
 
 LoadForRelatedness loader = new LoadForRelatedness(rlab, mat);
 
@@ -213,7 +213,7 @@ To see an example of this running you can run the LoadForRelatedness class:
 
 To Run Program: java LoadForCosine <path to rlabel file> <path to matrix_crs.mat file>
 e.g.
-$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.r-Dice.u-Tscore 
+$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice.u-Tscore 
 Distance between "boy" and "boy": 1.0000001
 Distance between "boy" and "girl": 0.34890193
 Distance between "girl" and "boy": 0.34890193
