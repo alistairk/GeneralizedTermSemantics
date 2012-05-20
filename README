@@ -38,28 +38,27 @@ Step 1
 This step builds a matrix. Separate matrices can be built from nouns (N), verbs (V) or adjectives (A). 
 An output directory must be specified and the name of the matrix is also needed. A new directory will be
 created using the name of the matrix. The minimum term and feature (context) frequency is also requested.
-I recommend 35 and 2 for nouns and adjectives and 10 and 2 for verbs. Next a list of parsed files must be
-listed.
+It is recommend to use 35 and 2 for nouns and adjectives and 10 and 2 for verbs. Next a list of parsed 
+files must be listed.
 
 The matrix files are nearly identical in design to those produced by the SuperMatrix package.
 
 To Run Program: java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
-e.g.
-$ java -cp GenTS.jar:. GenTS.BuildMatrix.BuildMatrix N . newMatrix 35 2 data/sampleParsed.txt 
-Directory: ./newMatrix created
-Loading: data/sampleParsed.txt
-14036 : 52728 : 270615
-Building: ./newMatrix/newMatrix.clabel
-Building: ./newMatrix/newMatrix.rlabel
-2328 : 23321 : 179944
-Building: ./newMatrix/matrix_crs.mat
-Processed 10000 rows
-Building: ./newMatrix/matrix_ccs.mat
-Written 10000 columns
-Written 20000 columns
+example command and output:
+	$ java -cp GenTS.jar:. GenTS.BuildMatrix.BuildMatrix N . newMatrix 35 2 data/sampleParsed.txt 
+	Directory: ./newMatrix created
+	Loading: data/sampleParsed.txt
+	14036 : 52728 : 270615
+	Building: ./newMatrix/newMatrix.clabel
+	Building: ./newMatrix/newMatrix.rlabel
+	2328 : 23321 : 179944
+	Building: ./newMatrix/matrix_crs.mat
+	Processed 10000 rows
+	Building: ./newMatrix/matrix_ccs.mat
+	Written 10000 columns
+	Written 20000 columns
 
 The following files will be produced:
-
 newMatrix/boundary.txt		-- boundaries between features types (syntactic relations)
 newMatrix/info.txt		-- information about the size of the matrix
 newMatrix/newMatrix.rlabel	-- lists the words in the matrix
@@ -72,25 +71,25 @@ newMatrix/row_features.csv	-- lists row features along with counts and entropy i
 
 Step 2
 
-Reweight the matrix with either the unsupervised, context-supervised or relation-supervised system. One of six measure of association can
+Reweight the matrix with either the unsupervised, context-supervised or relation-supervised system. One of six measures of association can
 be used in re-weighting the matrix, those are Pointwise Mutual Information (PMI), Log Likelihood (LL), Dice, T-score, Z-score and Chi-squared (Chi2).
-I recommend PMI as a tool for re-weighting matrices. Re-weighting can be done in the standard unsupervised manner, or training data can be used to 
-enhance the process. The row and column files
+Our experiments found PMI to be the best for re-weighting matrices. Re-weighting can be done in the standard unsupervised manner or using training
+data to provide supervision. These methods will create new row and column matrix files with the re-weighted matrix
 
 Choose one of these three:
 
 unsupervised:
 To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>
-e.g.
-$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised PMI newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat 
-PMI
-words: 2328
-
-381624.0
-1000
-2000
-
-creates a new matrix with the suffix "u-PMI":
+example command and output:
+	$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised PMI newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat 
+	PMI
+	words: 2328
+	
+	381624.0
+	1000
+	2000
+	
+This creates a new matrix with the suffix "u-PMI":
 newMatrix/matrix_ccs.mat.u-PMI	
 newMatrix/matrix_crs.mat.u-PMI
 
@@ -101,44 +100,44 @@ This program will make use of supervised training data for example, see the trai
 There should be one for each of three parts of speech.
 
 To Run Program: java WeightFeaturesContextSupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>
-e.g.
-$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesContextSupervised Dice data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat
-Unique training words: 1978
-Total words: 2328
-Occurrences of training words: 318382
-0
-1000
-2000
-Unique Pairs: 1955253
-Features processed: 1000
-Features processed: 2000
-Features processed: 3000
-Features processed: 4000
-Features processed: 5000
-Features processed: 6000
-Features processed: 7000
-Features processed: 8000
-Features processed: 9000
-Features processed: 10000
-Features processed: 11000
-Features processed: 12000
-Features processed: 13000
-Features processed: 14000
-Features processed: 15000
-Features processed: 16000
-Features processed: 17000
-Features processed: 18000
-Features processed: 19000
-Features processed: 20000
-Features processed: 21000
-Features processed: 22000
-Features processed: 23000
-Features included: 15305
-Average score: 6.873022157179207E-4
-1000
-2000
+example command and output:
+	$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesContextSupervised Dice data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat
+	Unique training words: 1978
+	Total words: 2328
+	Occurrences of training words: 318382
+	0
+	1000
+	2000
+	Unique Pairs: 1955253
+	Features processed: 1000
+	Features processed: 2000
+	Features processed: 3000
+	Features processed: 4000
+	Features processed: 5000
+	Features processed: 6000
+	Features processed: 7000
+	Features processed: 8000
+	Features processed: 9000
+	Features processed: 10000
+	Features processed: 11000
+	Features processed: 12000
+	Features processed: 13000
+	Features processed: 14000
+	Features processed: 15000
+	Features processed: 16000
+	Features processed: 17000
+	Features processed: 18000
+	Features processed: 19000
+	Features processed: 20000
+	Features processed: 21000
+	Features processed: 22000
+	Features processed: 23000
+	Features included: 15305
+	Average score: 6.873022157179207E-4
+	1000
+	2000
 
-creates a new matrix with the suffix "c-Dice":
+This creates a new matrix with the suffix "c-Dice":
 newMatrix/matrix_ccs.mat.c-Dice		-- re-weighted spearse column oriented matrix
 newMatrix/matrix_crs.mat.c-Dice		-- re-weighted sparse row oriented matrix
 columns_context_Dice.txt		-- list of new column weights
@@ -149,52 +148,52 @@ relation-supervised:
 This runs much like context-supervised but requires the boundary.txt file to be included when running.
 
 java WeightFeaturesRelationSupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>
-e.g.
-$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesRelationSupervised LL data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat newMatrix/boundary.txt 
-Unique training words: 1978
-Total words: 2328
-Occurrences of training words: 318382
-0
-1000
-2000
-Unique Pairs: 1955253
- : 0 0
-amount-value-R : 0 1
-as-arg-R : 1 3
-... (lots of output here)
-pred-R : 23313 23314
-s-R : 23314 23315
-Features included: 15305
-Average score: 3.045733070890246
-1000
-2000
+example command and output:
+	$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesRelationSupervised LL data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat newMatrix/boundary.txt 
+	Unique training words: 1978
+	Total words: 2328
+	Occurrences of training words: 318382
+	0
+	1000
+	2000
+	Unique Pairs: 1955253
+	 : 0 0
+	amount-value-R : 0 1
+	as-arg-R : 1 3
+	... (lots of output here)
+	pred-R : 23313 23314
+	s-R : 23314 23315
+	Features included: 15305
+	Average score: 3.045733070890246
+	1000
+	2000
 
-creates a new matrix with the suffix "r-LL":
+This creates a new matrix with the suffix "r-LL":
 newMatrix/matrix_ccs.mat.r-LL		-- re-weighted spearse column oriented matrix
 newMatrix/matrix_crs.mat.r-LL		-- re-weighted sparse row oriented matrix
 newMatrix/columns_relation_LL.txt	-- list of new column weights
 
 
-Step 2a
+Step 3 (optional)
 
 If you used supervised Matrix reweighting then you can run the unsupervised re-weighting on top of it.
 This was found to create the best results.
 
-e.g.
-$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised Tscore newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice newMatrix/matrix_ccs.mat.c-Dice 
-Tscore
-words: 2328
-
-1247633.1258486991
-1000
-2000
+example command and output:
+	$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised Tscore newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice newMatrix/matrix_ccs.mat.c-Dice 
+	Tscore
+	words: 2328
+	
+	1247633.1258486991
+	1000
+	2000
 
 creates a new matrix with the suffix "c-Dice.u-Tscore"
 newMatrix/matrix_ccs.mat.c-Dice.u-Tscore	-- re-weighted spearse column oriented matrix
 newMatrix/matrix_crs.mat.c-Dice.u-Tscore	-- re-weighted sparse row oriented matrix
 
 
-Step 3
+Step 4
 
 The next step is to actually use the matrix. For the most part you may want to write your own code
 to run experiments. Accessing the matrix is done through the class LoadForRelatedness. First 
@@ -218,26 +217,22 @@ If one word in a word pair is not found then it receives a score of -1.
 To see an example of this running you can run the LoadForRelatedness class:
 
 To Run Program: java LoadForCosine <path to rlabel file> <path to matrix_crs.mat file>
-e.g.
-$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice.u-Tscore 
-Distance between "boy" and "boy": 1.0000001
-Distance between "boy" and "girl": 0.4097439
-Distance between "girl" and "boy": 0.4097439
+example command and output:
+	$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice.u-Tscore 
+	Distance between "boy" and "boy": 1.0000001
+	Distance between "boy" and "girl": 0.4097439
+	Distance between "girl" and "boy": 0.4097439
 
-List of the top 10 closest words to "geometry":
-anthropology (0.74332416), alchemy (0.71357536), aikido (0.6964221), art (0.6943861), communism (0.6789571), cinema (0.678228), protein (0.6683792), folklore (0.6606066), ambergris (0.65492034), antimony (0.64818305)
+	List of the top 10 closest words to "geometry":
+	anthropology (0.74332416), alchemy (0.71357536), aikido (0.6964221), art (0.6943861), communism (0.6789571), cinema (0.678228), protein (0.6683792), folklore (0.6606066), ambergris (0.65492034), antimony (0.64818305)
 
-or
-
-$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat
-Distance between "boy" and "boy": 1.0
-Distance between "boy" and "girl": 0.48241818
-Distance between "girl" and "boy": 0.48241818
-
-List of the top 10 closest words to "geometry":
-alchemy (0.65953034), agriculture (0.6533324), chemistry (0.6336132), philosophy (0.6304994), choice (0.62729865), art (0.6239595), vision (0.623698), light (0.62046444), violence (0.6185485), humanity (0.6164602)
-
-
-
+ another example command and output:
+	$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat
+	Distance between "boy" and "boy": 1.0
+	Distance between "boy" and "girl": 0.48241818
+	Distance between "girl" and "boy": 0.48241818
+	
+	List of the top 10 closest words to "geometry":
+	alchemy (0.65953034), agriculture (0.6533324), chemistry (0.6336132), philosophy (0.6304994), choice (0.62729865), art (0.6239595), vision (0.623698), light (0.62046444), violence (0.6185485), humanity (0.6164602)
 
 
