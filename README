@@ -1,4 +1,4 @@
-This is the README file for the Java package Generalized TermSemantics (GenTS) v0.1
+This is the README file for the Java package Generalized TermSemantics (GenTS) v0.2
 This file contains instructions for building, reweighting and using a term-context matrix for measuring
 semantic relatedness between pairs of terms. Its main functionality is to determine a similarity score
 between word pairs and to generate lists of the closest related words to a given target word.
