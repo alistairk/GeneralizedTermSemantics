@@ -105,7 +105,7 @@ public class BuildMatrix {
 	 */
 	public static void main(String[] args) {
 		if(args.length < 6){
-			LOGGER.config("To Run Program: java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>");
+			LOGGER.info("To Run Program: java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>");
 		}
 		else{
 			String POS = args[0];

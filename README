@@ -45,18 +45,29 @@ The matrix files are nearly identical in design to those produced by the SuperMa
 
 To Run Program: java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
 example command and output:
-	$ java -cp GenTS.jar:. GenTS.BuildMatrix.BuildMatrix N . newMatrix 35 2 data/sampleParsed.txt 
-	Directory: ./newMatrix created
-	Loading: data/sampleParsed.txt
-	14036 : 52728 : 270615
-	Building: ./newMatrix/newMatrix.clabel
-	Building: ./newMatrix/newMatrix.rlabel
-	2328 : 23321 : 179944
-	Building: ./newMatrix/matrix_crs.mat
-	Processed 10000 rows
-	Building: ./newMatrix/matrix_ccs.mat
-	Written 10000 columns
-	Written 20000 columns
+	$ java -cp GenTS.jar:. ca.uottawa.gents.buildmatrix.BuildMatrix N . newMatrix 35 2 data/sampleParsed.txt 
+	Jul 7, 2012 7:26:31 PM ca.uottawa.gents.buildmatrix.BuildMatrix createDirectory
+	INFO: Directory: ./newMatrix created
+	Jul 7, 2012 7:26:31 PM ca.uottawa.gents.buildmatrix.BuildMatrix loadFile
+	INFO: Loading: data/sampleParsed.txt
+	Jul 7, 2012 7:26:38 PM ca.uottawa.gents.buildmatrix.BuildMatrix loadFile
+	INFO: 14036 : 52728 : 270615
+	Jul 7, 2012 7:26:38 PM ca.uottawa.gents.buildmatrix.BuildMatrix generateColumnMap
+	INFO: Building: ./newMatrix/newMatrix.clabel
+	Jul 7, 2012 7:26:38 PM ca.uottawa.gents.buildmatrix.BuildMatrix generateRowMap
+	INFO: Building: ./newMatrix/newMatrix.rlabel
+	Jul 7, 2012 7:26:38 PM ca.uottawa.gents.buildmatrix.BuildMatrix generateRowMap
+	INFO: 2328 : 23321 : 179944
+	Jul 7, 2012 7:26:38 PM ca.uottawa.gents.buildmatrix.BuildMatrix generateCRS
+	INFO: Building: ./newMatrix/matrix_crs.mat
+	Jul 7, 2012 7:26:38 PM ca.uottawa.gents.buildmatrix.BuildMatrix generateCRS
+	INFO: Processed 10000 rows
+	Jul 7, 2012 7:26:39 PM ca.uottawa.gents.buildmatrix.BuildMatrix generateCCS
+	INFO: Building: ./newMatrix/matrix_ccs.mat
+	Jul 7, 2012 7:26:39 PM ca.uottawa.gents.buildmatrix.BuildMatrix generateCCS
+	INFO: Written 10000 columns
+	Jul 7, 2012 7:26:40 PM ca.uottawa.gents.buildmatrix.BuildMatrix generateCCS
+	INFO: Written 20000 columns
 
 The following files will be produced:
 newMatrix/boundary.txt		-- boundaries between features types (syntactic relations)
@@ -81,13 +92,17 @@ Choose one of these three:
 unsupervised:
 To Run Program: java WeightFeaturesUnsupervised <PMI|LL|F|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>
 example command and output:
-	$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised PMI newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat 
-	PMI
-	words: 2328
-	
-	381624.0
-	1000
-	2000
+	$ java -cp GenTS.jar:. ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised PMI newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat 
+	Jul 7, 2012 7:27:27 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised main
+	INFO: Association measure: PMI
+	Jul 7, 2012 7:27:27 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised loadRows
+	INFO: words: 2328
+	Jul 7, 2012 7:27:27 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised loadColumnFeatures
+	INFO: weight: 381624.0
+	Jul 7, 2012 7:27:29 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised rowsToColumns
+	INFO: Rows read: 1000
+	Jul 7, 2012 7:27:29 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised rowsToColumns
+	INFO: Rows read: 2000
 	
 This creates a new matrix with the suffix "u-PMI":
 newMatrix/matrix_ccs.mat.u-PMI	
@@ -101,41 +116,75 @@ There should be one for each of three parts of speech.
 
 To Run Program: java WeightFeaturesContextSupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file>
 example command and output:
-	$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesContextSupervised Dice data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat
-	Unique training words: 1978
-	Total words: 2328
-	Occurrences of training words: 318382
-	0
-	1000
-	2000
-	Unique Pairs: 1955253
-	Features processed: 1000
-	Features processed: 2000
-	Features processed: 3000
-	Features processed: 4000
-	Features processed: 5000
-	Features processed: 6000
-	Features processed: 7000
-	Features processed: 8000
-	Features processed: 9000
-	Features processed: 10000
-	Features processed: 11000
-	Features processed: 12000
-	Features processed: 13000
-	Features processed: 14000
-	Features processed: 15000
-	Features processed: 16000
-	Features processed: 17000
-	Features processed: 18000
-	Features processed: 19000
-	Features processed: 20000
-	Features processed: 21000
-	Features processed: 22000
-	Features processed: 23000
-	Features included: 15305
-	Average score: 6.873022157179207E-4
-	1000
-	2000
+	$ java -cp GenTS.jar:. ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised Dice data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat
+	Jul 7, 2012 7:27:42 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadRows
+	INFO: Unique training words: 1978
+	Jul 7, 2012 7:27:42 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadRows
+	INFO: Total words: 2328
+	Jul 7, 2012 7:27:42 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadRows
+	INFO: Occurrences of training words: 318382
+	Jul 7, 2012 7:27:42 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised colleceRelatedPairs
+	INFO: Pairs: 0
+	Jul 7, 2012 7:27:43 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised colleceRelatedPairs
+	INFO: Pairs: 1000
+	Jul 7, 2012 7:27:43 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised colleceRelatedPairs
+	INFO: Pairs: 2000
+	Jul 7, 2012 7:27:43 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised colleceRelatedPairs
+	INFO: Unique Pairs: 1955253
+	Jul 7, 2012 7:27:43 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 1000
+	Jul 7, 2012 7:27:43 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 2000
+	Jul 7, 2012 7:27:43 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 3000
+	Jul 7, 2012 7:27:43 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 4000
+	Jul 7, 2012 7:27:43 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 5000
+	Jul 7, 2012 7:27:45 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 6000
+	Jul 7, 2012 7:27:45 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 7000
+	Jul 7, 2012 7:27:45 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 8000
+	Jul 7, 2012 7:27:46 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 9000
+	Jul 7, 2012 7:27:47 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 10000
+	Jul 7, 2012 7:27:47 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 11000
+	Jul 7, 2012 7:27:47 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 12000
+	Jul 7, 2012 7:27:47 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 13000
+	Jul 7, 2012 7:27:47 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 14000
+	Jul 7, 2012 7:27:47 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 15000
+	Jul 7, 2012 7:27:48 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 16000
+	Jul 7, 2012 7:27:48 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 17000
+	Jul 7, 2012 7:27:48 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 18000
+	Jul 7, 2012 7:27:50 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 19000
+	Jul 7, 2012 7:27:50 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 20000
+	Jul 7, 2012 7:27:51 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 21000
+	Jul 7, 2012 7:27:51 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 22000
+	Jul 7, 2012 7:27:51 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features processed: 23000
+	Jul 7, 2012 7:27:51 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Features included: 15305
+	Jul 7, 2012 7:27:51 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadColumnFeatures
+	INFO: Average score: 6.873022157179207E-4
+	Jul 7, 2012 7:27:53 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised rowsToColumns
+	INFO: Rows read: 1000
+	Jul 7, 2012 7:27:53 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised rowsToColumns
+	INFO: Rows read: 2000
 
 This creates a new matrix with the suffix "c-Dice":
 newMatrix/matrix_ccs.mat.c-Dice		-- re-weighted spearse column oriented matrix
@@ -149,24 +198,40 @@ This runs much like context-supervised but requires the boundary.txt file to be 
 
 java WeightFeaturesRelationSupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <training data> <row_features.csv file> <row matrix file> <column matrix file> <column boundary file>
 example command and output:
-	$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesRelationSupervised LL data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat newMatrix/boundary.txt 
-	Unique training words: 1978
-	Total words: 2328
-	Occurrences of training words: 318382
-	0
-	1000
-	2000
-	Unique Pairs: 1955253
-	 : 0 0
-	amount-value-R : 0 1
-	as-arg-R : 1 3
-	... (lots of output here)
-	pred-R : 23313 23314
-	s-R : 23314 23315
-	Features included: 15305
-	Average score: 3.045733070890246
-	1000
-	2000
+	$ java -cp GenTS.jar:. ca.uottawa.gents.weightmatrix.WeightFeaturesRelationSupervised LL data/trainingData/nouns.txt newMatrix/row_features.csv newMatrix/matrix_crs.mat newMatrix/matrix_ccs.mat newMatrix/boundary.txt 
+	Jul 7, 2012 7:30:15 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadRows
+	INFO: Unique training words: 1978
+	Jul 7, 2012 7:30:15 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadRows
+	INFO: Total words: 2328
+	Jul 7, 2012 7:30:15 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised loadRows
+	INFO: Occurrences of training words: 318382
+	Jul 7, 2012 7:30:15 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised colleceRelatedPairs
+	INFO: Pairs: 0
+	Jul 7, 2012 7:30:16 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised colleceRelatedPairs
+	INFO: Pairs: 1000
+	Jul 7, 2012 7:30:16 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised colleceRelatedPairs
+	INFO: Pairs: 2000
+	Jul 7, 2012 7:30:16 PM ca.uottawa.gents.weightmatrix.WeightFeaturesContextSupervised colleceRelatedPairs
+	INFO: Unique Pairs: 1955253
+	Jul 7, 2012 7:30:16 PM ca.uottawa.gents.weightmatrix.WeightFeaturesRelationSupervised loadColumnFeatures
+	INFO:  : 0 0
+	Jul 7, 2012 7:30:16 PM ca.uottawa.gents.weightmatrix.WeightFeaturesRelationSupervised loadColumnFeatures
+	INFO: amount-value-R : 0 1
+	...
+	...
+	...
+	Jul 7, 2012 7:30:23 PM ca.uottawa.gents.weightmatrix.WeightFeaturesRelationSupervised loadColumnFeatures
+	INFO: pred-R : 23313 23314
+	Jul 7, 2012 7:30:24 PM ca.uottawa.gents.weightmatrix.WeightFeaturesRelationSupervised loadColumnFeatures
+	INFO: s-R : 23314 23315
+	Jul 7, 2012 7:30:24 PM ca.uottawa.gents.weightmatrix.WeightFeaturesRelationSupervised loadColumnFeatures
+	INFO: Features included: 15305
+	Jul 7, 2012 7:30:24 PM ca.uottawa.gents.weightmatrix.WeightFeaturesRelationSupervised loadColumnFeatures
+	INFO: Average score: 3.045732792391912
+	Jul 7, 2012 7:30:25 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised rowsToColumns
+	INFO: Rows read: 1000
+	Jul 7, 2012 7:30:25 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised rowsToColumns
+	INFO: Rows read: 2000
 
 This creates a new matrix with the suffix "r-LL":
 newMatrix/matrix_ccs.mat.r-LL		-- re-weighted spearse column oriented matrix
@@ -180,13 +245,17 @@ If you used supervised Matrix reweighting then you can run the unsupervised re-w
 This was found to create the best results.
 
 example command and output:
-	$ java -cp GenTS.jar:. GenTS.WeightMatrix.WeightFeaturesUnsupervised Tscore newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice newMatrix/matrix_ccs.mat.c-Dice 
-	Tscore
-	words: 2328
-	
-	1247633.1258486991
-	1000
-	2000
+	$ java -cp GenTS.jar:. ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised Tscore newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice newMatrix/matrix_ccs.mat.c-Dice 
+	Jul 7, 2012 7:33:18 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised main
+	INFO: Association measure: Tscore
+	Jul 7, 2012 7:33:18 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised loadRows
+	INFO: words: 2328
+	Jul 7, 2012 7:33:18 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised loadColumnFeatures
+	INFO: weight: 2770159.342211558
+	Jul 7, 2012 7:33:19 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised rowsToColumns
+	INFO: Rows read: 1000
+	Jul 7, 2012 7:33:19 PM ca.uottawa.gents.weightmatrix.WeightFeaturesUnsupervised rowsToColumns
+	INFO: Rows read: 2000
 
 creates a new matrix with the suffix "c-Dice.u-Tscore"
 newMatrix/matrix_ccs.mat.c-Dice.u-Tscore	-- re-weighted spearse column oriented matrix
@@ -218,21 +287,28 @@ To see an example of this running you can run the LoadForRelatedness class:
 
 To Run Program: java LoadForCosine <path to rlabel file> <path to matrix_crs.mat file>
 example command and output:
-	$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice.u-Tscore 
-	Distance between "boy" and "boy": 1.0000001
-	Distance between "boy" and "girl": 0.4097439
-	Distance between "girl" and "boy": 0.4097439
-
-	List of the top 10 closest words to "geometry":
-	anthropology (0.74332416), alchemy (0.71357536), aikido (0.6964221), art (0.6943861), communism (0.6789571), cinema (0.678228), protein (0.6683792), folklore (0.6606066), ambergris (0.65492034), antimony (0.64818305)
+	$ java -cp GenTS.jar:. ca.uottawa.gents.GentsExample newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat.c-Dice.u-Tscore
+	Jul 7, 2012 7:34:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: Distance between "boy" and "boy": 1.0000001
+	Jul 7, 2012 7:34:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: Distance between "boy" and "girl": 0.4097439
+	Jul 7, 2012 7:34:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: Distance between "girl" and "boy": 0.4097439
+	Jul 7, 2012 7:34:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: List of the top 10 closest words to "geometry":
+	Jul 7, 2012 7:34:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: anthropology (0.74332416), alchemy (0.71357536), aikido (0.6964221), art (0.6943861), communism (0.6789571), cinema (0.678228), protein (0.6683792), folklore (0.6606066), ambergris (0.65492034), antimony (0.64818305)
 
  another example command and output:
-	$ java -cp GenTS.jar:. GenTS.Relatedness.LoadForRelatedness newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat
-	Distance between "boy" and "boy": 1.0
-	Distance between "boy" and "girl": 0.48241818
-	Distance between "girl" and "boy": 0.48241818
-	
-	List of the top 10 closest words to "geometry":
-	alchemy (0.65953034), agriculture (0.6533324), chemistry (0.6336132), philosophy (0.6304994), choice (0.62729865), art (0.6239595), vision (0.623698), light (0.62046444), violence (0.6185485), humanity (0.6164602)
-
+	$ java -cp GenTS.jar:. ca.uottawa.gents.GentsExample newMatrix/newMatrix.rlabel newMatrix/matrix_crs.mat
+	Jul 7, 2012 7:35:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: Distance between "boy" and "boy": 1.0
+	Jul 7, 2012 7:35:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: Distance between "boy" and "girl": 0.48241818
+	Jul 7, 2012 7:35:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: Distance between "girl" and "boy": 0.48241818
+	Jul 7, 2012 7:35:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: List of the top 10 closest words to "geometry":
+	Jul 7, 2012 7:35:57 PM ca.uottawa.gents.GentsExample <init>
+	INFO: alchemy (0.65953034), agriculture (0.6533324), chemistry (0.6336132), philosophy (0.6304994), choice (0.62729865), art (0.6239595), vision (0.623698), light (0.62046444), violence (0.6185485), humanity (0.6164602)
 
