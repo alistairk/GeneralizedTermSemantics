@@ -149,12 +149,11 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 						
 						double value = 1;
 						boolean isGood = true;
-						value = MatrixWeighter.getAssociation(truePos, falsePos, trueNeg, falseNeg, type);
+						value = MatrixWeighter.getAssociation(truePos, falsePos, falseNeg, trueNeg, type);
 						if(falseNeg > 0 && (Double.isNaN(value) || Double.isInfinite(value))){
-							LOGGER.severe("Error at feature: "+featureNumber +"\n" +(long)truePos + " " + (long)falsePos + "\n" + (long)falseNeg + " " + (long)trueNeg + "\n" + value);
+							LOGGER.severe("Error at feature: " + relation + "\tnumber: "+featureNumber +"\n" +(long)truePos + " " + (long)falsePos + "\n" + (long)falseNeg + " " + (long)trueNeg + "\n" + value);
 						}
 						if(truePos + falsePos + trueNeg + falseNeg == 0){
-							//System.out.println("zero");
 							isGood = false;
 							value = 1;
 						}
@@ -178,7 +177,6 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 					matrixReader.close();
 					break;
 				}
-	
 				else {
 					String[] parts = line.split(" ");
 					double tfWordsInContext = 0;
@@ -195,18 +193,18 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 					}
 					if(uniqueCount >= 2){
 						double[] pairCts = getPairCounts(wordsInCurrFeat); // counts found pairs sharing the same feautre
-						double relShareFeat = pairCts[0]; // SG2F
-						double unrelShareFeat = pairCts[1]; // nSG2F
+						double relShareFeat = pairCts[0]; 
+						double unrelShareFeat = pairCts[1]; 
 						double relNotShareFeat = countRelatedPairsInDifferentContexts(wordsInCurrFeat); // counts all pairs sharing the same feature
 						
 						
 						totalFeatureCt ++;
 						double notShareFeat = ctWordsInContext * (legitWords-tfWordsInContext); 
 						
-						truePos += relShareFeat/10000.0;
-						falsePos += unrelShareFeat/10000.0;
-						trueNeg += relNotShareFeat/10000.0;// - SG2F;
-						falseNeg += (notShareFeat - trueNeg)/10000.0; // pairs unrelated & not sharing feature
+						truePos += relShareFeat;
+						falsePos += unrelShareFeat;
+						falseNeg += relNotShareFeat;
+						trueNeg += notShareFeat - falseNeg; // pairs unrelated & not sharing feature
 						
 					}
 					featureNumber++;
@@ -242,7 +240,7 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 				else{
 					weights[i] = ave;
 				}
-				weightsWriter.write(weights[i] + "\n");
+				weightsWriter.write(i + " " + weights[i] + "\n");
 			}
 	
 			weightsWriter.close();
