@@ -14,7 +14,7 @@ public class GentsExample {
 	 */
 	public static void main(String args[]){
 		if(args.length < 2){
-			LOGGER.info("To Run Program: java LoadForCosine <path to rlabel file> <path to matrix_crs.mat file>");
+			LOGGER.info("To Run Program: java GentsExample <path to rlabel file> <path to matrix_crs.mat file>");
 		}
 		else{
 			new GentsExample(args[0], args[1]);
@@ -24,6 +24,10 @@ public class GentsExample {
 	public GentsExample(String labels, String matrix){
 		LoadForRelatedness loader = new LoadForRelatedness(labels, matrix);
 		
+		calculateDistances(loader);
+	}
+	
+	public void calculateDistances(LoadForRelatedness loader){
 		LOGGER.info("Distance between \"boy\" and \"boy\": " + loader.distance("boy", "boy"));
 		LOGGER.info("Distance between \"boy\" and \"girl\": " + loader.distance("boy", "girl"));
 		LOGGER.info("Distance between \"girl\" and \"boy\": " + loader.distance("girl", "boy"));
@@ -31,4 +35,5 @@ public class GentsExample {
 		LOGGER.info("List of the top 10 closest words to \"geometry\":");
 		LOGGER.info(loader.getWordArrayString(loader.getClosestWords("geometry", 10)));
 	}
+	
 }

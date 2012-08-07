@@ -45,49 +45,49 @@ import java.util.logging.Logger;
  */
 public class BuildMatrix {
 	//the POS, directory and name of matrix
-	private final String pos;
-	private String fullDirectory;
-	private final String matrixName;
+	protected final String pos;
+	protected String fullDirectory;
+	protected final String matrixName;
 	
 	//minimum column and row counts
-	private final int minColumns;
-	private final int minRows;
+	protected final int minColumns;
+	protected final int minRows;
 	
 	//counts of words, contexts and non zero entries in the matrix
-	private int wordCounter;
-	private int contextCounter;
-	private int nonZeroEnties;
+	protected int wordCounter;
+	protected int contextCounter;
+	protected int nonZeroEnties;
 	
 	// maps words and columns to their index values
-	private final Map<String, Integer> word2Index;
-	private final Map<String, Integer> context2Index;
+	protected final Map<String, Integer> word2Index;
+	protected final Map<String, Integer> context2Index;
 	
 	//maps an index value to the word or context
-	private final List<String> index2Word;
-	private final List<String> index2Context;
+	protected final List<String> index2Word;
+	protected final List<String> index2Context;
 	
 	// count of each specific word or context and count of each pair
-	private final List<Integer> wordCount; //index is word ID
-	private final List<Integer> contextCount; //index is context ID
-	private final List<Map<Integer, Integer>> pairCounter; // ArrayList index is Word ID, TreeMap index is context ID
+	protected final List<Integer> wordCount; //index is word ID
+	protected final List<Integer> contextCount; //index is context ID
+	protected final List<Map<Integer, Integer>> pairCounter; // ArrayList index is Word ID, TreeMap index is context ID
 	
 	//maps the sorted row/column number to the original
-	private int[] rowSort2orig;
-	private int[] columnSort2orig;
+	protected int[] rowSort2orig;
+	protected int[] columnSort2orig;
 	
 	//maps the original row/column number to sorted
 	//private int[] rowOrig2sort;
-	private int[] columnOrig2sort;
+	protected int[] columnOrig2sort;
 	
 	//counts the number of rows, columns and entries
-	private int rowCount;
-	private int columnCount;
-	private int entryCount;
+	protected int rowCount;
+	protected int columnCount;
+	protected int entryCount;
 	
 	//keeps track of the previous context's relation type
-	private String prevFeatureType;
+	protected String prevFeatureType;
 	
-	private static final Logger LOGGER = Logger.getLogger(BuildMatrix.class.getName());
+	protected static final Logger LOGGER = Logger.getLogger(BuildMatrix.class.getName());
 	
 	
 	/**
@@ -143,7 +143,7 @@ public class BuildMatrix {
 	 * 
 	 * @param info
 	 */
-	private void writeInfo(String info) {
+	protected void writeInfo(String info) {
 		try{
 			String infoFile = fullDirectory + "/info.txt";
 			BufferedWriter infoWriter = new BufferedWriter(new FileWriter(infoFile));
@@ -277,7 +277,7 @@ public class BuildMatrix {
 	 * @param values
 	 * @throws IOException
 	 */
-	private void writeFeature(String word, BufferedWriter featureWriter, List<Integer> values) throws IOException {
+	protected void writeFeature(String word, BufferedWriter featureWriter, List<Integer> values) throws IOException {
 		int nonZero = values.size();
 		int termFreq = 0;
 		for(int i = 0; i < values.size(); i++){
@@ -396,9 +396,9 @@ public class BuildMatrix {
 	 * @param line
 	 * @throws IOException
 	 */
-	private void printBoundary(BufferedWriter boundaryWriter, String feature, int line) throws IOException {
+	protected void printBoundary(BufferedWriter boundaryWriter, String feature, int line) throws IOException {
 		String[] parts = feature.split(":");
-		if(!prevFeatureType.equals(parts[1])){
+		if(parts.length >= 2 && !prevFeatureType.equals(parts[1])){
 			if(line != 0){
 				boundaryWriter.write(line+"\n");
 			}
@@ -456,7 +456,7 @@ public class BuildMatrix {
 	 * @param row
 	 * @return
 	 */
-	private int getCount(Map<Integer, Integer> row) {
+	protected int getCount(Map<Integer, Integer> row) {
 		int count = 0;
 		for(int key : row.keySet()){
 			if(columnOrig2sort[key] != -1){
@@ -603,7 +603,7 @@ public class BuildMatrix {
 	 * @param word
 	 * @param context
 	 */
-	private void countPair(int word, int context) {
+	protected void countPair(int word, int context) {
 		int wordCt = 1;
 		wordCt += wordCount.get(word);
 		wordCount.set(word, wordCt);
@@ -643,7 +643,7 @@ public class BuildMatrix {
 	 * @param word
 	 * @return
 	 */
-	private int getWord(String word){
+	protected int getWord(String word){
 		synchronized(this){
 			int wordID = -1;
 			if(word2Index.containsKey(word)){
@@ -666,7 +666,7 @@ public class BuildMatrix {
 	 * @param context
 	 * @return
 	 */
-	private int getContext(String context){
+	protected int getContext(String context){
 		synchronized(this){
 			int contextID = -1;
 			if(context2Index.containsKey(context)){
