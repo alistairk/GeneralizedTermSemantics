@@ -12,6 +12,8 @@ data/		-- sample data including a sample matrix, training data and sample parsed
 data/sampleMatrix_n/	-- sample matrix and its files
 data/sampleParsed.txt	-- sample of Minipar parsed data
 data/trainingData/	-- sample training data for nouns, verbs and adjectives.
+data/RGen.txt		-- the Rubenstein and Goodenough data set for English 
+			   [Herbert Rubenstein and John B. Goodenough. 1965. Contextual correlates of synonymy. Commun. ACM 8, 10 (October 1965), 627-633.]
 
 Further explanation as to what this package does and some of the experiments conducted with it can be found 
 in the following paper. To cite this work please reference:
@@ -311,4 +313,17 @@ example command and output:
 	INFO: List of the top 10 closest words to "geometry":
 	Jul 7, 2012 7:35:57 PM ca.uottawa.gents.GentsExample <init>
 	INFO: alchemy (0.65953034), agriculture (0.6533324), chemistry (0.6336132), philosophy (0.6304994), choice (0.62729865), art (0.6239595), vision (0.623698), light (0.62046444), violence (0.6185485), humanity (0.6164602)
+
+
+A more useful application is MultiPairsRelatedness, which can be found in the ca.uottawa.gents.tools directory
+To Run Program: java MultiPairsRelatedness <path to rlabel file> <path to matrix_crs.mat file> <inputFile> <outputFile>
+
+The input file should be in the format of data/RGen.txt. The output file should be whatever file you want the results of the program written to.
+
+This program takes in the rlable file and a matrix_crs.mat file with or without reweighting and also an input and output file.
+This is designed to solve word pair relatedness problems in the style of Rubenstein & Goodenough.
+
+Check the file 
+
+
 
