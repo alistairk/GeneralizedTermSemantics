@@ -79,7 +79,6 @@ public class LoadForRelatedness {
 	 * load time somewhat, but hopefully will save time when running many queries
 	 * on the matrix.
 	 * 
-	 * 
 	 * @param file
 	 */
 	private void loadMatrix(String file) {
