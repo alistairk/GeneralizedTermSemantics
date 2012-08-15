@@ -22,14 +22,14 @@ import java.util.logging.Logger;
  * 
  * Run the program like this:
  * 
- * java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>
+ * java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <row matrix file> <column matrix file>
  * 
  * @author akennedy
  *
  */
 public class WeightFeaturesUnsupervised {
 	private static final Logger LOGGER = Logger.getLogger(WeightFeaturesUnsupervised.class.getName());
-	public List<String> words;
+	//public List<String> words;
 	public List<Double> featureWeight;
 	public double totalWeight;
 	public double[] weights;
@@ -42,14 +42,14 @@ public class WeightFeaturesUnsupervised {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if(args.length < 4){
-			LOGGER.info("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <rlabel file> <row matrix file> <column matrix file>");
+		if(args.length < 3){
+			LOGGER.info("To Run Program: java WeightFeaturesUnsupervised <PMI|LL|Dice|Tscore|Zscore|Chi2> <row matrix file> <column matrix file>");
 		}
 		else{
 			String association = args[0]; // PMI
-			String rlabelFile = args[1];// "/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"
-			String rowMatrixFile = args[2]; // finalMatrix_n
-			String columnMatrixFile = args[3];
+			//String rlabelFile = args[1];// "/Users/akennedy/Research/buildMatrix/finalMatrix_"+POS+"
+			String rowMatrixFile = args[1]; // finalMatrix_n
+			String columnMatrixFile = args[2];
 			
 			//names of reweighted files
 			String newRowMatrixFile = rowMatrixFile+".u-"+association;
@@ -58,9 +58,6 @@ public class WeightFeaturesUnsupervised {
 			LOGGER.info("Association measure: " + association);
 			
 			WeightFeaturesUnsupervised wfu = new WeightFeaturesUnsupervised();
-	
-			//loads all the words in the array from the rlabel file
-			wfu.loadRows(rlabelFile);
 	
 			//loads the column matrix
 			wfu.loadColumnFeatures(columnMatrixFile);
@@ -77,7 +74,7 @@ public class WeightFeaturesUnsupervised {
 	 * Constructor initializes a WeightFeaturesUnsupervised object.
 	 */
 	public WeightFeaturesUnsupervised(){
-		words = new ArrayList<String>();
+		//words = new ArrayList<String>();
 		featureWeight = new ArrayList<Double>();
 		totalWeight = 0;
 	}
@@ -187,36 +184,6 @@ public class WeightFeaturesUnsupervised {
 	    	 LOGGER.warning(e.getMessage());
 		}
 
-	}
-
-
-	/**
-	 * Opens the file passed as the argument and reads all its lines into the words
-	 * ArrayList. The file passed to it should be a list of all the words in the matrix.
-	 * 
-	 * @param fname
-	 */
-	public void loadRows(String fname) {
-		try {
-			BufferedReader wordReader = new BufferedReader(new FileReader(fname));
-	         
-			for ( ; ; ) {
-				String line = wordReader.readLine();
-	
-				if (line == null) {
-					wordReader.close();
-					break;
-				}
-	
-				else {
-					words.add(line);
-				}
-			}
-	
-		} catch (Exception e) {
-	    	 LOGGER.warning(e.getMessage());
-		}
-		LOGGER.info("words: " + words.size());
 	}
 	
 	/**
