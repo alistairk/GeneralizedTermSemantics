@@ -49,11 +49,11 @@ import java.util.logging.Logger;
  */
 public class LoadForRelatedness {
 	//TreeMap maps words to their row number in the matrix
-	private Map<String,Integer> words;
+	protected Map<String,Integer> words;
 	//holds the denominator scores for each word, calculated at load time.
-	private float[] wordVectorValue;
+	protected float[] wordVectorValue;
 	// holds the matrix, every word is made up of a TreeMap of column, value pairs.
-	private List<Map<Integer,Float>> matrix;
+	protected List<Map<Integer,Float>> matrix;
 	
 	private static final Logger LOGGER = Logger.getLogger(LoadForRelatedness.class.getName());
 	
@@ -201,7 +201,7 @@ public class LoadForRelatedness {
 	 * @param denominator
 	 * @return
 	 */
-	private float cosineValue(Map<Integer, Float> row1, Map<Integer, Float> row2, float denominator){
+	protected float cosineValue(Map<Integer, Float> row1, Map<Integer, Float> row2, float denominator){
 		float numerator = 0;
 		if(row1.keySet().size() <= row2.keySet().size()){
 			for(int key : row1.keySet()){
@@ -280,7 +280,7 @@ public class LoadForRelatedness {
 	 * @param toReturn
 	 * @param wordDist
 	 */
-	private void insert(WordDist[] toReturn, WordDist wordDist) {
+	protected void insert(WordDist[] toReturn, WordDist wordDist) {
 		int index = toReturn.length-1;
 		while(index >= 0 && toReturn[index].getSimilarity() < wordDist.getSimilarity()){
 			if(index < toReturn.length-1){
