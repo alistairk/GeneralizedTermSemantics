@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 /**
  * This program creates a matrix in the style of SuperMatrix. See:
- * Bartosz Broda, Maciej Piasecki. SuperMatrix: a General tool for lexical semantic knowledge acquisition. In Proceedings of IMCSIT'2008. pp.345~352   
+ * Bartosz Broda,Maciej Piasecki.SuperMatrix: a General tool for lexical semantic knowledge acquisition. In Proceedings of IMCSIT'2008. pp.345~352
  * 
  * This program reads in files of dependency triples generated using Minipar and produces a matrix.
  * The parsed input files should be as follows:

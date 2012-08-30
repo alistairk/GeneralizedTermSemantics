@@ -15,10 +15,10 @@ import java.util.logging.Logger;
  * This class performs supervised Matrix weighting. Much like WeightFeaturesUnsupervised this program takes
  * in an already constructed matrix and produces one with a different weight. This is based off of the work
  * of:
- * Alistair Kennedy, Stan Szpakowicz (2011). “A Supervised Method of Feature Weighting for Measuring Semantic Relatedness”. 
- * In Proceedings of Canadian AI 2011, St. John’s, Newfoundland, Canada, May 25-27, 222-233.
+ * Alistair Kennedy, Stan Szpakowicz (2011). "A Supervised Method of Feature Weighting for Measuring Semantic Relatedness". 
+ * In Proceedings of Canadian AI 2011, St. John's, Newfoundland, Canada, May 25-27, 222-233.
  * and
- * Alistair Kennedy, Stan Szpakowicz (2012). “Supervised Distributional Semantic Relatedness”. 
+ * Alistair Kennedy, Stan Szpakowicz (2012). "Supervised Distributional Semantic Relatedness". 
  * To appear in the Proceedings of Text Speech Dialogue 2012.
  * 
  * Every context in the term-context matrix is given a unique weight based upon the number of synonym and non-synonym
