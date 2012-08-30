@@ -1,0 +1,15 @@
+*.class
+*.out
+*.log
+*.bbl
+*.blg
+*.aux
+*.DS_Store
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+build/
+dist/
