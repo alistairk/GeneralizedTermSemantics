@@ -93,6 +93,7 @@ public class PickNearestNeighbour {
 		}
 		catch(Exception e){
 	    	 LOGGER.warning(e.getMessage());
+	    	 e.printStackTrace();
 		}
 	}
 }

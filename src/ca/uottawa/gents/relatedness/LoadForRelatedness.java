@@ -55,7 +55,7 @@ public class LoadForRelatedness {
 	// holds the matrix, every word is made up of a TreeMap of column, value pairs.
 	protected List<Map<Integer,Float>> matrix;
 	
-	private static final Logger LOGGER = Logger.getLogger(LoadForRelatedness.class.getName());
+	protected static final Logger LOGGER = Logger.getLogger(LoadForRelatedness.class.getName());
 	
 	
 	/**
