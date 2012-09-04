@@ -57,7 +57,9 @@ public class PickNearestNeighbour {
 	
 	/**
 	 * This function takes the input and output files opens them and uses
-	 * the loader to find the distance between both candidate for most similar.
+	 * the loader to find the distance between the target and both candidates
+	 * for synonymy. These scores are printed out with the word triple in a 
+	 * file.
 	 * 
 	 * @param loader
 	 * @param inFile
