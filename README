@@ -1,11 +1,13 @@
-This is the README file for the Java package Generalized TermSemantics (GenTS) v0.3
+Generalized Term Semantics (GenTS v0.3)
+
+This is the README file for the Java package Generalized Term Semantics (GenTS) v0.3
 This file contains instructions for building, reweighting and using a term-context matrix for measuring
 semantic relatedness between pairs of terms. Its main functionality is to determine a similarity score
 between word pairs and to generate lists of the closest related words to a given target word.
 
 This package includes the following
 GenTS.jar	-- a jar file containing executables of GenTS
-README		-- this readme
+README		-- this file
 COPYING		-- the license
 src/		-- the source code for GenTS.jar
 data/		-- sample data including a sample matrix, training data and sample parsed text
@@ -18,7 +20,7 @@ data/RGen.txt		-- the Rubenstein and Goodenough data set for English
 Further explanation as to what this package does and some of the experiments conducted with it can be found 
 in the following paper. To cite this work please reference:
 
-Alistair Kennedy, Stan Szpakowicz (2010). "Supervised Distributional Semantic Relatedness". 
+Alistair Kennedy, Stan Szpakowicz (2012). "Supervised Distributional Semantic Relatedness". 
 To appear in the Proceedings of the 15th International Conference on Text, Speech and Dialogue 
 TSD 2012, Brno, Czech Republic.
 
