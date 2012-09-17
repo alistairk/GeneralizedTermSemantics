@@ -27,7 +27,7 @@ public class GentsExample {
 		calculateDistances(loader);
 	}
 	
-	public void calculateDistances(LoadForRelatedness loader){
+	private void calculateDistances(LoadForRelatedness loader){
 		LOGGER.info("Distance between \"boy\" and \"boy\": " + loader.distance("boy", "boy"));
 		LOGGER.info("Distance between \"boy\" and \"girl\": " + loader.distance("boy", "girl"));
 		LOGGER.info("Distance between \"girl\" and \"boy\": " + loader.distance("girl", "boy"));
