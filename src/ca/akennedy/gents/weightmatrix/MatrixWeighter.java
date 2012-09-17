@@ -1,4 +1,4 @@
-package ca.uottawa.gents.weightmatrix;
+package ca.akennedy.gents.weightmatrix;
 
 /**
  * This class is made up of static methods for calculating a variety of measures of association.

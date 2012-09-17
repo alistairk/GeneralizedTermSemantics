@@ -47,7 +47,7 @@
  *     
  */
 
-package ca.uottawa.gents.weightmatrix;
+package ca.akennedy.gents.weightmatrix;
 
 /**
  * This interface is for distance functions, originally from Roget's SemDist. The three

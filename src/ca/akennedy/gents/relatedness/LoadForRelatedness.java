@@ -1,4 +1,4 @@
-package ca.uottawa.gents.relatedness;
+package ca.akennedy.gents.relatedness;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

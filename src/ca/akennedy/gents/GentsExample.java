@@ -1,7 +1,7 @@
-package ca.uottawa.gents;
+package ca.akennedy.gents;
 import java.util.logging.Logger;
 
-import ca.uottawa.gents.relatedness.LoadForRelatedness;
+import ca.akennedy.gents.relatedness.LoadForRelatedness;
 
 
 public class GentsExample {

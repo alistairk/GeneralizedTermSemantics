@@ -1,4 +1,4 @@
-package ca.uottawa.gents.weightmatrix;
+package ca.akennedy.gents.weightmatrix;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

@@ -1,4 +1,4 @@
-package ca.uottawa.gents.tools;
+package ca.akennedy.gents.tools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.logging.Logger;
 
-import ca.uottawa.gents.relatedness.LoadForRelatedness;
+import ca.akennedy.gents.relatedness.LoadForRelatedness;
 
 /**
  * This program loads a matrix and calculate the semantic relatedness between word pairs. This program

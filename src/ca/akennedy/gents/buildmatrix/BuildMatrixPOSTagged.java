@@ -1,4 +1,4 @@
-package ca.uottawa.gents.buildmatrix;
+package ca.akennedy.gents.buildmatrix;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
