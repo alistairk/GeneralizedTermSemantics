@@ -261,12 +261,13 @@ public class WeightFeaturesContextSupervised {
 						double trueNeg = notShareFeat - falseNeg; // pairs unrelated & not sharing feature
 						
 						//find association
+						
 						double value = MatrixWeighter.getAssociation(truePos, falsePos, falseNeg, trueNeg, type);
 						
 						//check for a few common errors
 						//shouldn't matter now but factored in during debugging.
 						if(Double.isNaN(value) || Double.isInfinite(value) || trueNeg < 0){
-							LOGGER.severe("Error at feature: "+featureNumber +"\n" +(long)truePos + " " + (long)falsePos + "\n" + (long)falseNeg + " " + (long)trueNeg + "\n" + value);
+							LOGGER.severe("Error at feature: "+featureNumber +"\n" +truePos + " " + falsePos + "\n" + falseNeg + " " + trueNeg + "\n" + value);
 						}
 						
 						//set feature weight
