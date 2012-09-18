@@ -149,6 +149,9 @@ public class WeightFeaturesRelationSupervised extends WeightFeaturesContextSuper
 						
 						double value = 1;
 						boolean isGood = true;
+						if(trueNeg < 0){
+							trueNeg = Double.MAX_VALUE;
+						}
 						value = MatrixWeighter.getAssociation(truePos, falsePos, falseNeg, trueNeg, type);
 						if(Double.isNaN(value) || Double.isInfinite(value) || trueNeg < 0){
 							LOGGER.severe("Error at feature: " + relation + "\tnumber: "+featureNumber +"\n" +truePos + " " + falsePos + "\n" + falseNeg + " " + trueNeg + "\n" + value);
