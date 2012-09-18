@@ -261,7 +261,10 @@ public class WeightFeaturesContextSupervised {
 						double trueNeg = notShareFeat - falseNeg; // pairs unrelated & not sharing feature
 						
 						//find association
-						
+
+						if(trueNeg < 0){
+							trueNeg = Double.MAX_VALUE;
+						}
 						double value = MatrixWeighter.getAssociation(truePos, falsePos, falseNeg, trueNeg, type);
 						
 						//check for a few common errors
