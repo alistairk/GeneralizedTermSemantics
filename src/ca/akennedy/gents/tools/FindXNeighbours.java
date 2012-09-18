@@ -84,6 +84,7 @@ public class FindXNeighbours implements Runnable{
 			
 			int counter = 0;
 			for ( ; ; ) {
+				lineNumber++;
 				String line = inputReader.readLine();
 	
 				if (line == null) {
@@ -96,9 +97,9 @@ public class FindXNeighbours implements Runnable{
 						results.add("");
 						Runnable runner = new FindXNeighbours(word, lineNumber, counter);
 						executor.execute(runner);
+						counter++;
 					}
 				}
-				counter++;
 			}
 			executor.shutdown();
 			while(!executor.isTerminated()){
@@ -128,6 +129,7 @@ public class FindXNeighbours implements Runnable{
 		synchronized(results){
 			String output = lineNumber + "\t" + word + "\t" + neighbours + "\n";
 			results.set(idNumber, output);
+			LOGGER.info("Finished thread: " + idNumber);
 		}
 	}
 }
