@@ -265,9 +265,9 @@ public class WeightFeaturesContextSupervised {
 						
 						//check for a few common errors
 						//shouldn't matter now but factored in during debugging.
-						//if(Double.isNaN(value) || Double.isInfinite(value) || trueNeg < 0){
+						if(Double.isNaN(value) || Double.isInfinite(value) || trueNeg < 0){
 							LOGGER.severe("Error at feature: "+featureNumber +"\n" +(long)truePos + " " + (long)falsePos + "\n" + (long)falseNeg + " " + (long)trueNeg + "\n" + value);
-						//}
+						}
 						
 						//set feature weight
 						weights[featureNumber] = value;
