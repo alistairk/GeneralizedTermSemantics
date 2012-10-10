@@ -1,3 +1,7 @@
+# This python script takes a matrix and performs LSA on it. There are two arguments, the first
+# is the number of eigenvectors to use, I recommend 500, the second is the matrix. A new matrix
+# will be created with the same name, but with LSA.<eigenvectors> appended to its file name
+
 from csc import divisi2
 from divisi2 import SparseMatrix
 import sys, shlex, numpy, time
