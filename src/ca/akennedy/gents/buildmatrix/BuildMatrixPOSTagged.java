@@ -182,16 +182,16 @@ public class BuildMatrixPOSTagged extends BuildMatrix {
 			}
 			else if("de".equals(language)){
 				if(wordParts[1].matches("NN")){
-					context = wordParts[0]+"_N";
+					context = wordParts[0].toLowerCase()+"_N";
 				}
 				else if(wordParts[1].matches("V.*")){
-					context = wordParts[0]+"_V";
+					context = wordParts[0].toLowerCase()+"_V";
 				}
 				else if(wordParts[1].matches("ADJ.*")){
-					context = wordParts[0]+"_A";
+					context = wordParts[0].toLowerCase()+"_A";
 				}
 				else if(wordParts[1].matches("ADV")){
-					context = wordParts[0]+"_R";
+					context = wordParts[0].toLowerCase()+"_R";
 				}
 			}
 		}
