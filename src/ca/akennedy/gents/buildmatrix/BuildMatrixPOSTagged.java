@@ -167,7 +167,6 @@ public class BuildMatrixPOSTagged extends BuildMatrix {
 				}
 			}
 			else if("fr".equals(language)){
-			
 				if(wordParts[1].matches("N.*")){
 					context = wordParts[0]+"_N";
 				}
@@ -178,6 +177,20 @@ public class BuildMatrixPOSTagged extends BuildMatrix {
 					context = wordParts[0]+"_A";
 				}
 				else if(wordParts[1].matches("ADV.*")){
+					context = wordParts[0]+"_R";
+				}
+			}
+			else if("de".equals(language)){
+				if(wordParts[1].matches("NN")){
+					context = wordParts[0]+"_N";
+				}
+				else if(wordParts[1].matches("V.*")){
+					context = wordParts[0]+"_V";
+				}
+				else if(wordParts[1].matches("ADJ.*")){
+					context = wordParts[0]+"_A";
+				}
+				else if(wordParts[1].matches("ADV")){
 					context = wordParts[0]+"_R";
 				}
 			}
