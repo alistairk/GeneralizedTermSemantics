@@ -154,16 +154,15 @@ public class LoadForRelatedness {
 	}
 	
 	/**
-	 * Performs cosine similarity between two words. If the first word is missing
-	 * it returns -1, if the second word is missing it returns -2, otherwise it
-	 * returns the similarity between 0..1.
+	 * Performs cosine similarity between two words. If the first or second word is missing
+	 * it returns -9, otherwise it returns the similarity between 0..1.
 	 * 
 	 * @param word1
 	 * @param word2
 	 * @return
 	 */
 	public float distance(String word1, String word2){
-		float returnValue = -1;
+		float returnValue = -9;
 		int id1 = 0;
 		int id2 = 0;
 		boolean id1Found = true;
