@@ -87,7 +87,7 @@ public class MultiPairsRelatedness {
 				else {
 					String[] parts = line.split("\t");
 					Float relatedness = loader.distance(parts[0], parts[1]);
-					if(relatedness < 0){
+					if(relatedness < -1.0){
 						relatedness = 0.0f;
 					}
 					outputWriter.write(parts[0] + "\t" + parts[1] + "\t" + parts[2] + "\t" + relatedness + "\n");

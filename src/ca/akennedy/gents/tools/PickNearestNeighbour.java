@@ -80,12 +80,12 @@ public class PickNearestNeighbour {
 				else {
 					String[] parts = line.split("\t");
 					Float realNeighbour = loader.distance(parts[0], parts[1]);
-					if(realNeighbour < 0){
+					if(realNeighbour < -1.0){
 						realNeighbour = 0.0f;
 					}
 
 					Float falseNeighbour = loader.distance(parts[0], parts[2]);
-					if(falseNeighbour < 0){
+					if(falseNeighbour < -1.0){
 						falseNeighbour = 0.0f;
 					}
 					
