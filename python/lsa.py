@@ -4,9 +4,9 @@
 
 from csc import divisi2
 from divisi2 import SparseMatrix
-import sys, shlex, numpy, time
+import sys, shlex, numpy, time, math
 
-eigenvalues = int(sys.argv[1])
+singularValues = int(sys.argv[1])
 
 f = open ( sys.argv[2] , 'r')
 line = f.readline()
@@ -16,6 +16,8 @@ print line
 rows = lineSplit[0]
 cols = lineSplit[1]
 nz = lineSplit[2]
+
+#eigenvalues = min(int(rows), int(cols))
 
 line = f.readline()
 
@@ -46,20 +48,25 @@ matrix = SparseMatrix.from_lists(valList, rowList, colList, int(rows), int(cols)
 
 print "Matrix built", time.localtime()[3], time.localtime()[4], time.localtime()[5]
 
-U, s, V = matrix.svd(k=eigenvalues)
+U, s, V = matrix.svd(k=singularValues)
 
 print "SVD complete", time.localtime()[3], time.localtime()[4], time.localtime()[5]
 
-outFile = sys.argv[2]+".LSA." + str(eigenvalues)
+outFile = sys.argv[2]+"."+singularValues+".LSA_matrices"
 
 print outFile
 
+print s
+
 fout = open(outFile, "w" )
-newNZ = int(rows) * eigenvalues
-fout.write(rows + " " + str(eigenvalues) + " " + str(newNZ) + "\n")
+#newNZ = int(rows) * eigenvalues
+#fout.write(rows + " " + str(eigenvalues) + " " + str(newNZ) + "\n")
+for i in range(singularValues):
+	fout.write(str(s[i]) + " ")
+fout.write("\n")
 for i in range(int(rows)):
-	for j in range(int(eigenvalues)):
-		fout.write(str(j) + " " + str(U[i,j]) + " ")
+	for j in range(singularValues):
+		fout.write(str(U[i,j]) + " ")
 	fout.write("\n")
 fout.close()
 
