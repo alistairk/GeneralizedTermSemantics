@@ -79,17 +79,17 @@ public class PickNearestNeighbour {
 				}
 				else {
 					String[] parts = line.split("\t");
-					Float realNeighbour = loader.distance(parts[0], parts[1]);
-					if(realNeighbour < -1.0){
-						realNeighbour = 0.0f;
+					String output = line;
+					for(int i = 1; i < parts.length; i++){
+						Float relatedness = loader.distance(parts[0], parts[i]);
+						if(relatedness < -1.0){
+							relatedness = 0.0f;
+						}
+						output += "\t" + relatedness;
 					}
-
-					Float falseNeighbour = loader.distance(parts[0], parts[2]);
-					if(falseNeighbour < -1.0){
-						falseNeighbour = 0.0f;
-					}
+					output += "\n";
 					
-					outputWriter.write(parts[0] + "\t" + parts[1] + "\t" + parts[2] + "\t" + realNeighbour + "\t" + falseNeighbour + "\n");
+					outputWriter.write(output);
 				}
 			}
 		}
