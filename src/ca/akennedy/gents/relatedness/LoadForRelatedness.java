@@ -155,7 +155,7 @@ public class LoadForRelatedness {
 	
 	/**
 	 * Performs cosine similarity between two words. If the first or second word is missing
-	 * it returns -9, otherwise it returns the similarity between 0..1.
+	 * it returns -9, otherwise it returns the similarity between -1..1.
 	 * 
 	 * @param word1
 	 * @param word2
@@ -328,6 +328,15 @@ public class LoadForRelatedness {
 			toReturn += target + " : " + getWordArrayString(words);
 			return toReturn;
 		}
+	}
+	
+	/**
+	 * Randomly selects a word from the list of words and returns it
+	 * @return
+	 */
+	public String getRandomWord(){
+		Object[] wordsArray = words.keySet().toArray();
+		return (String)wordsArray[(int)(Math.random()*words.size())];
 	}
 
 }
