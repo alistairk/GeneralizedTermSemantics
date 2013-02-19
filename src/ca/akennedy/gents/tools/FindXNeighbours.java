@@ -28,9 +28,9 @@ public class FindXNeighbours implements Runnable{
 	private static List<String> results;
 	private static int topX;
 	
-	private String word;
-	private int lineNumber;
-	private int idNumber;
+	private final String word;
+	private final int lineNumber;
+	private final int idNumber;
 
 	/**
 	 * Takes the arguments and creates a new FindXNeighbours object.

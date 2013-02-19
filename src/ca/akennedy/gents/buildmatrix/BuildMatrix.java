@@ -74,7 +74,7 @@ public class BuildMatrix {
 	protected final List<Map<Integer, Integer>> pairCounter; // ArrayList index is Word ID, TreeMap index is context ID
 
 	protected final List<Set<Integer>> uniqueWordCount; //index is word ID
-	protected final List<Set<Integer>> uniqueContextCount; //index is context ID
+	protected final List<Set<Integer>> uniqueContxtCount; //index is context ID
 	
 	//maps the sorted row/column number to the original
 	protected int[] rowSort2orig;
@@ -189,7 +189,7 @@ public class BuildMatrix {
 		contextCount = new ArrayList<Integer>();
 		
 		uniqueWordCount = new ArrayList<Set<Integer>>();
-		uniqueContextCount = new ArrayList<Set<Integer>>();
+		uniqueContxtCount = new ArrayList<Set<Integer>>();
 		
 		pairCounter = new ArrayList<Map<Integer, Integer>>();
 		wordCounter = 0;
@@ -499,7 +499,7 @@ public class BuildMatrix {
 			for(int i = 0; i < columns.size(); i++){
 				int contextID = context2Index.get(columns.get(i));
 				//if(contextCount.get(contextID) >= minColumns){
-				if(uniqueContextCount.get(contextID).size() >= minColumns){
+				if(uniqueContxtCount.get(contextID).size() >= minColumns){
 					columnSort2orig[goodWordCount] = contextID;
 					columnOrig2sort[contextID] = goodWordCount;
 					columnLabelWriter.write(columns.get(i) + "\n");
@@ -622,7 +622,7 @@ public class BuildMatrix {
 		int contextCt = 1;
 		contextCt += contextCount.get(context);
 		contextCount.set(context, contextCt);
-		uniqueContextCount.get(context).add(word);
+		uniqueContxtCount.get(context).add(word);
 		
 		if(pairCounter.size() == word){
 			Map<Integer, Integer> mapper = new TreeMap<Integer, Integer>();
@@ -689,7 +689,7 @@ public class BuildMatrix {
 				context2Index.put(context, contextCounter);
 				index2Context.add(context);
 				contextCount.add(0);
-				uniqueContextCount.add(new TreeSet<Integer>());
+				uniqueContxtCount.add(new TreeSet<Integer>());
 				contextCounter++;
 				contextID = contextCounter-1;
 			}
