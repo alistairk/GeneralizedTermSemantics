@@ -6,7 +6,7 @@ semantic relatedness between pairs of terms. Its main functionality is to determ
 between word pairs and to generate lists of the closest related words to a given target word.
 
 This package includes the following
-GenTS.jar	-- a jar file containing executables of GenTS
+build.xml	-- ant file to create new GenTS.jar
 README		-- this file
 COPYING		-- the license
 src/		-- the source code for GenTS.jar
@@ -39,6 +39,11 @@ to be of the same format.
 
 Step 1
 
+Build the new jar file GenTS.jar. To do this use the ant command with build.xml to construct it. A new jar
+file will be place in the dist/lib/ directory named GenTS-<date>.jar.
+
+Step 2
+
 This step builds a matrix. Separate matrices can be built from nouns (N), verbs (V) or adjectives (A). 
 An output directory must be specified and the name of the matrix is also needed. A new directory will be
 created using the name of the matrix. The minimum term and feature (context) frequency is also requested.
@@ -49,8 +54,8 @@ The matrix files are nearly identical in design to those produced by the SuperMa
 
 To Run Program: java BuildMatrix <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <parsedFile 1> ... <parsedFile n>
 example command and output:
-	$ java -cp GenTS.jar:. ca.uottawa.gents.buildmatrix.BuildMatrix N . newMatrix 35 2 data/sampleParsed.txt 
-	Jul 7, 2012 7:26:31 PM ca.uottawa.gents.buildmatrix.BuildMatrix createDirectory
+	$ java -cp GenTS.jar:. ca.akennedy.gents.buildmatrix.BuildMatrix N . newMatrix 35 2 data/sampleParsed.txt 
+	Jul 7, 2012 7:26:31 PM ca.akennedy.gents.buildmatrix.BuildMatrix createDirectory
 	INFO: Directory: ./newMatrix created
 	Jul 7, 2012 7:26:31 PM ca.uottawa.gents.buildmatrix.BuildMatrix loadFile
 	INFO: Loading: data/sampleParsed.txt
@@ -84,7 +89,7 @@ newMatrix/newMatrix.clabel	-- lists the contexts in the matrix
 newMatrix/row_features.csv	-- lists row features along with counts and entropy information
 
 
-Step 2
+Step 3
 
 Reweight the matrix with either the unsupervised, context-supervised or relation-supervised system. One of six measures of association can
 be used in re-weighting the matrix, those are Pointwise Mutual Information (PMI), Log Likelihood (LL), Dice, T-score, Z-score and Chi-squared (Chi2).
@@ -241,7 +246,7 @@ newMatrix/matrix_crs.mat.r-LL		-- re-weighted sparse row oriented matrix
 newMatrix/columns_relation_LL.txt	-- list of new column weights
 
 
-Step 3 (optional)
+Step 4a (optional)
 
 If you used supervised Matrix reweighting then you can run the unsupervised re-weighting on top of it.
 This was found to create the best results.
@@ -261,8 +266,13 @@ creates a new matrix with the suffix "c-Dice.u-Tscore"
 newMatrix/matrix_ccs.mat.c-Dice.u-Tscore	-- re-weighted spearse column oriented matrix
 newMatrix/matrix_crs.mat.c-Dice.u-Tscore	-- re-weighted sparse row oriented matrix
 
+Step 4b (optional)
 
-Step 4
+If you want to apply LSA on top of this matrix there are programs to do so in the python directory.
+It is recommended that these programs be run on a server as they can take a very large amount of ram
+and take a very long time to run.
+
+Step 5
 
 The next step is to actually use the matrix. For the most part you may want to write your own code
 to run experiments. Accessing the matrix is done through the class LoadForRelatedness. First 
