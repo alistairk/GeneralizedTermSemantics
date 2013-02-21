@@ -66,6 +66,11 @@ newMatrix/matrix_crs.mat	-- a sparse matrix which lists non-zero columns for eac
 newMatrix/newMatrix.clabel	-- lists the contexts in the matrix
 newMatrix/row_features.csv	-- lists row features along with counts and entropy information
 
+A similar program builds matrices using POS tagged text. This version uses language specific code for English, French and German. 
+This program the minimum count of each word and context is its the number of other contexts/words it appears with, not its total
+count. A window size must also be specified. In my work I used 5. Tagging must be done with the Stanford POS tagger.
+
+To Run Program: java BuildMatrixPOSTagged <en|fr|de> <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <window size> <parsedFile 1> ... <parsedFile n>
 
 Step 3
 
