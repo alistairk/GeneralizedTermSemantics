@@ -1,4 +1,4 @@
-Generalized Term Semantics (GenTS v0.3) (development)
+Generalized Term Semantics (GenTS v0.3.1) 
 
 This is the README file for the Java package Generalized Term Semantics (GenTS) v0.3
 This file contains instructions for building, reweighting and using a term-context matrix for measuring
@@ -13,6 +13,7 @@ src/		-- the source code for GenTS
 data/		-- sample data including a sample matrix, training data and sample parsed text
 data/sampleMatrix_n/	-- sample matrix and its files
 data/sampleParsed.txt	-- sample of Minipar parsed data
+data/sampleTagged.txt	-- sample of Stanford POS tagged data
 data/trainingData/	-- sample training data for nouns, verbs and adjectives.
 data/RGen.txt		-- the Rubenstein and Goodenough data set for English 
 			   [Herbert Rubenstein and John B. Goodenough. 1965. Contextual correlates of synonymy. Commun. ACM 8, 10 (October 1965), 627-633.]
@@ -71,6 +72,9 @@ This program the minimum count of each word and context is its the number of oth
 count. A window size must also be specified. In my work I used 5. Tagging must be done with the Stanford POS tagger.
 
 To Run Program: java BuildMatrixPOSTagged <en|fr|de> <N|V|A> <output Directory> <output File Name> <min Term Frequency> <min Context Frequency> <window size> <parsedFile 1> ... <parsedFile n>
+example command:
+$ java -cp GenTS.jar:. ca.akennedy.gents.buildmatrix.BuildMatrixPOSTagged en N . newMatrix2 20 20 5 sampleTagged.txt
+
 
 Step 3
 
@@ -136,7 +140,12 @@ Step 4b (optional)
 
 If you want to apply LSA on top of this matrix there are programs to do so in the python directory.
 It is recommended that these programs be run on a server as they can take a very large amount of ram
-and take a very long time to run.
+and take a very long time to run. 
+
+These programs require divisi2
+
+python/lsa.py <singular values to generate> <row matrix>
+python/formatLSAMatrix.py <lsa file name> <singular values to use> <exponent to attach to sigma>
 
 Step 5
 
