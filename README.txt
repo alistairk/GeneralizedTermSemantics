@@ -1,4 +1,4 @@
-Generalized Term Semantics (GenTS v0.3.1) 
+Generalized Term Semantics (GenTS v0.3.1) (development)
 
 This is the README file for the Java package Generalized Term Semantics (GenTS) v0.3
 This file contains instructions for building, reweighting and using a term-context matrix for measuring

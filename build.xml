@@ -32,8 +32,8 @@
     <mkdir dir="${dist}/lib"/>
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
-    <!-- jar jarfile="${dist}/lib/GenTS-${DSTAMP}.jar" basedir="${build}"/ -->
-    <jar jarfile="${dist}/lib/GenTS-0.3.1.jar" basedir="${build}"/>
+    <jar jarfile="${dist}/lib/GenTS-${DSTAMP}.jar" basedir="${build}"/>
+    <!-- jar jarfile="${dist}/lib/GenTS-0.3.1.jar" basedir="${build}"/ -->
   </target>
 
   <target name="clean"
